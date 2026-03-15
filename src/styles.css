@@ -176,6 +176,7 @@ h2 {
 #game-root {
   min-height: 360px;
   overflow: hidden;
+  position: relative;
   border-radius: 22px;
   border: 2px solid rgba(251, 243, 218, 0.75);
   box-shadow: 0 20px 40px rgba(35, 49, 23, 0.28);
@@ -300,11 +301,10 @@ h2 {
 
 .touch-controls {
   position: absolute;
-  left: 1rem;
-  bottom: 1rem;
+  inset: 0;
   display: none;
-  gap: 0.4rem;
-  align-items: center;
+  pointer-events: none;
+  z-index: 6;
 }
 
 .touch-controls button {
@@ -313,11 +313,35 @@ h2 {
   background: rgba(255, 248, 231, 0.82);
   color: #294126;
   box-shadow: 0 10px 24px rgba(46, 61, 38, 0.18);
+  pointer-events: auto;
 }
 
-.touch-row {
-  display: flex;
-  gap: 0.4rem;
+.touch-button {
+  position: absolute;
+}
+
+.touch-up {
+  top: 0.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.touch-down {
+  bottom: 0.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.touch-left {
+  top: 50%;
+  left: 0.5rem;
+  transform: translateY(-50%);
+}
+
+.touch-right {
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
 }
 
 @media (max-width: 900px) {

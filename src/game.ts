@@ -183,16 +183,14 @@ class VillageScene extends Phaser.Scene {
     const controls = document.createElement('div');
     controls.className = 'touch-controls';
     controls.innerHTML = `
-      <button data-direction="up" aria-label="Move up">▲</button>
-      <div class="touch-row">
-        <button data-direction="left" aria-label="Move left">◀</button>
-        <button data-direction="down" aria-label="Move down">▼</button>
-        <button data-direction="right" aria-label="Move right">▶</button>
-      </div>
+      <button class="touch-button touch-up" data-direction="up" aria-label="Move up">▲</button>
+      <button class="touch-button touch-left" data-direction="left" aria-label="Move left">◀</button>
+      <button class="touch-button touch-right" data-direction="right" aria-label="Move right">▶</button>
+      <button class="touch-button touch-down" data-direction="down" aria-label="Move down">▼</button>
     `;
 
-    const shell = document.getElementById('game-shell');
-    shell?.appendChild(controls);
+    const gameRoot = document.getElementById('game-root');
+    gameRoot?.appendChild(controls);
 
     controls.querySelectorAll('button').forEach((button) => {
       const direction = button.getAttribute('data-direction') as keyof typeof this.thumbstickState;
