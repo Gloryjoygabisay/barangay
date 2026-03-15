@@ -7,9 +7,10 @@ const setLanguageMock = vi.fn();
 const initTelemetryMock = vi.fn();
 const logInfoMock = vi.fn();
 
-vi.mock('../src/game', () => ({
-  createGame: createGameMock,
-  GameController: {}
+vi.mock('../src/game-loader', () => ({
+  loadGameModule: vi.fn(async () => ({
+    createGame: createGameMock
+  }))
 }));
 
 vi.mock('../src/telemetry', () => ({
@@ -63,6 +64,7 @@ describe('app bootstrap smoke test', () => {
     expect(document.getElementById('about-panel')?.classList.contains('hidden')).toBe(true);
 
     (document.getElementById('start-button') as HTMLButtonElement).click();
+    await Promise.resolve();
 
     expect(createGameMock).toHaveBeenCalledOnce();
     expect(createGameMock).toHaveBeenCalledWith('tl');

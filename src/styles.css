@@ -99,6 +99,34 @@ select {
   color: #5b573c;
 }
 
+.start-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 1.5rem;
+  font-size: 0.92rem;
+  color: #355130;
+}
+
+.start-loading.is-error {
+  color: #8b2e1e;
+}
+
+.start-loading-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(53, 81, 48, 0.2);
+  border-top-color: currentColor;
+  border-radius: 999px;
+  animation: start-loading-spin 0.8s linear infinite;
+}
+
+@keyframes start-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .version-line {
   font-size: 0.88rem;
   color: #5b573c;

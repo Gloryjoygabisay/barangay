@@ -11,6 +11,8 @@ export type UiTextKey =
   | 'startFeatureChoices'
   | 'startFeatureLanguage'
   | 'startButton'
+  | 'startLoading'
+  | 'startLoadError'
   | 'startHint'
   | 'startVersionLabel'
   | 'eyebrow'
@@ -63,6 +65,14 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   startButton: {
     en: 'Start journey',
     tl: 'Simulan ang paglalakbay'
+  },
+  startLoading: {
+    en: 'Loading the trail...',
+    tl: 'Inihahanda ang paglalakbay...'
+  },
+  startLoadError: {
+    en: 'Unable to load the game. Please try again.',
+    tl: 'Hindi ma-load ang laro. Pakisubukang muli.'
   },
   startHint: {
     en: 'Best played on mobile or in a narrow browser window.',
