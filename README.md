@@ -29,6 +29,9 @@ Open the Vite dev server URL in your browser to play locally.
 - `npm run preview` serves the production build locally
 - `npm test` runs the Vitest smoke suite
 - `npm run test:watch` runs Vitest in watch mode
+- `npm run test:e2e` runs the Playwright browser smoke suite once and exits
+- `npm run test:e2e:headed` runs the Playwright smoke suite in headed mode
+- `npm run test:e2e:install` installs the Chromium browser used by Playwright locally
 
 ## Project structure
 
@@ -85,10 +88,11 @@ To add a new encounter:
 
 ## Testing
 
-The repo currently uses a small Vitest smoke suite instead of deep gameplay tests.
+The repo uses a small Vitest smoke suite plus a lightweight Playwright browser smoke test instead of deep gameplay tests.
 
 - `tests/app.smoke.test.ts` verifies the app shell, language switching, About panel, and game startup wiring
 - `tests/build.smoke.test.ts` verifies that a production build succeeds and emits loadable assets
+- `tests/e2e/app.smoke.spec.ts` verifies that the app shell renders in a real browser and that the About panel opens and closes correctly
 
 Before shipping changes, run:
 
@@ -96,6 +100,15 @@ Before shipping changes, run:
 npm test
 npm run build
 ```
+
+For browser smoke coverage on a laptop, install the Playwright browser once and then run:
+
+```bash
+npm run test:e2e:install
+npm run test:e2e
+```
+
+`npm run test:e2e` uses Playwright Test directly, so it runs once and exits instead of entering watch mode. By default it builds the app and serves the production output with `vite preview`, which mirrors the GitHub Pages deployment path more closely than the dev server.
 
 ## GitHub Pages deployment
 
@@ -108,6 +121,7 @@ The GitHub Pages workflow lives at `.github/workflows/deploy.yml`. On pushes to 
 3. builds the app
 4. uploads `dist/`
 5. deploys the site with GitHub Pages
+6. runs the Playwright smoke suite against the deployed Pages URL
 
 ## New Relic monitoring
 
