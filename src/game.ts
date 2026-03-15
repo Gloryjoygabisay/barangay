@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { encounters, localizeText, type Encounter, type StatKey } from './data/encounters';
 import { t, type Language } from './data/localization';
+import { logInfo } from './telemetry';
 
 type GameStats = Record<StatKey, number>;
 
@@ -263,13 +264,23 @@ class VillageScene extends Phaser.Scene {
           Object.entries(choice.effects).forEach(([key, value]) => {
             this.stats[key as StatKey] += value ?? 0;
           });
-          this.completed.add(encounter.id);
-          this.resolvedChoices.set(encounter.id, choice.id);
-          this.refreshStatsUi();
-          body.textContent = `${t('resultPrefix', this.language)}: ${localizeText(choice.result, this.language)}`;
-          choiceList.replaceChildren();
-          this.markHotspotCompleted(encounter.hotspotId);
+        this.completed.add(encounter.id);
+        this.resolvedChoices.set(encounter.id, choice.id);
+        this.refreshStatsUi();
+        logInfo('Encounter resolved', {
+          eventName: 'encounter_resolved',
+          encounterId: encounter.id,
+          hotspotId: encounter.hotspotId,
+          choiceId: choice.id,
+          language: this.language,
+          trust: this.stats.trust,
+          courage: this.stats.courage,
+          supplies: this.stats.supplies
         });
+        body.textContent = `${t('resultPrefix', this.language)}: ${localizeText(choice.result, this.language)}`;
+        choiceList.replaceChildren();
+        this.markHotspotCompleted(encounter.hotspotId);
+      });
         choiceList.appendChild(button);
       });
     }

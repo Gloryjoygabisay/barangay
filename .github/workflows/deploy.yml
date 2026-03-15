@@ -33,7 +33,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Bump release version
+        run: npm version patch --no-git-tag-version
+
       - name: Build
+        env:
+          VITE_NEW_RELIC_INGESTION_KEY: ${{ secrets.NEW_RELIC_INGESTION_KEY }}
         run: npm run build
 
       - name: Upload artifact

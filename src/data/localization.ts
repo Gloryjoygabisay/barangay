@@ -12,9 +12,14 @@ export type UiTextKey =
   | 'startFeatureLanguage'
   | 'startButton'
   | 'startHint'
+  | 'startVersionLabel'
   | 'eyebrow'
   | 'title'
   | 'language'
+  | 'about'
+  | 'aboutTitle'
+  | 'aboutBody'
+  | 'versionLabel'
   | 'stats'
   | 'trust'
   | 'courage'
@@ -63,6 +68,10 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
     en: 'Best played on mobile or in a narrow browser window.',
     tl: 'Pinakamainam laruin sa mobile o sa makitid na browser window.'
   },
+  startVersionLabel: {
+    en: 'Version',
+    tl: 'Bersyon'
+  },
   eyebrow: {
     en: 'Narrative Demo',
     tl: 'Demo ng Kuwento'
@@ -74,6 +83,22 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   language: {
     en: 'Language',
     tl: 'Wika'
+  },
+  about: {
+    en: 'About',
+    tl: 'Tungkol Dito'
+  },
+  aboutTitle: {
+    en: 'About This Game',
+    tl: 'Tungkol sa Laro'
+  },
+  aboutBody: {
+    en: 'Trail Through the Barangay is a mobile-friendly narrative exploration game about a young Filipino traveling through a mountain village, meeting people, making choices, and shaping the journey through trust, courage, and supplies.',
+    tl: 'Ang Landas sa Kabundukan ay isang mobile-friendly na larong paggalugad at pagkukuwento tungkol sa isang batang Pilipinong naglalakbay sa baryong nasa kabundukan, nakikilala ang mga tao, namimili ng kilos, at hinuhubog ang paglalakbay sa pamamagitan ng tiwala, tapang, at baon.'
+  },
+  versionLabel: {
+    en: 'Version',
+    tl: 'Bersyon'
   },
   stats: {
     en: 'Journey Stats',

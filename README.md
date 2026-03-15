@@ -73,6 +73,13 @@ To add a new encounter:
 
 This Vite config uses a relative `base` path, so it can be deployed to GitHub Pages project sites without changing asset URLs.
 
+## New Relic browser logging
+
+- Browser logging is enabled when `VITE_NEW_RELIC_INGESTION_KEY` is present at build time
+- The GitHub Pages workflow maps this from the GitHub secret `NEW_RELIC_INGESTION_KEY`
+- Because this is a static browser app, the ingestion key becomes part of the client bundle
+- Use a browser-safe, scoped ingest key rather than a private server-only credential
+
 Typical deployment flow:
 
 1. Push this repo to GitHub

@@ -99,6 +99,15 @@ select {
   color: #5b573c;
 }
 
+.version-line {
+  font-size: 0.88rem;
+  color: #5b573c;
+}
+
+.inline-version {
+  margin-top: 0.35rem;
+}
+
 .game-shell {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
@@ -124,6 +133,12 @@ select {
   justify-content: space-between;
   align-items: end;
   gap: 1rem;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .eyebrow {
@@ -291,12 +306,42 @@ h2 {
   color: #453417;
 }
 
+.compact-button {
+  margin-top: 0;
+}
+
 .choice-button:active,
 .primary-button:active,
 .secondary-button:active,
 .touch-controls button:active {
   transform: translateY(1px);
   opacity: 0.92;
+}
+
+.about-panel {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(28, 36, 22, 0.52);
+  backdrop-filter: blur(3px);
+  z-index: 14;
+}
+
+.about-card {
+  width: min(100%, 34rem);
+  padding: 1rem 1rem 1.1rem;
+  background: rgba(253, 247, 231, 0.96);
+  border: 1px solid rgba(104, 84, 52, 0.22);
+  border-radius: 20px;
+  box-shadow: 0 22px 48px rgba(28, 36, 22, 0.28);
+}
+
+.about-card p + p,
+.about-card h2 + p {
+  margin-top: 0.8rem;
+  line-height: 1.5;
 }
 
 .touch-controls {
@@ -399,6 +444,11 @@ h2 {
     flex-direction: column;
   }
 
+  .topbar-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
   .dialogue {
     padding: 0.75rem;
   }
@@ -410,7 +460,8 @@ h2 {
   }
 
   .choice-button,
-  .secondary-button {
+  .secondary-button,
+  .compact-button {
     width: 100%;
   }
 
