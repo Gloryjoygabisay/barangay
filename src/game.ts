@@ -27,6 +27,8 @@ const HOTSPOT_TEXTURES: Record<string, string> = {
   market: 'marker-market',
   ridge: 'marker-ridge'
 };
+const ENCOUNTER_TRIGGER_RADIUS = 28;
+const ENCOUNTER_RESET_RADIUS = 40;
 
 type Facing = 'down' | 'up' | 'side';
 
@@ -39,6 +41,7 @@ class VillageScene extends Phaser.Scene {
   private language: Language = 'en';
   private stats: GameStats = { ...STARTING_STATS };
   private activeEncounterId: string | null = null;
+  private dismissedEncounterId: string | null = null;
   private completed = new Set<string>();
   private resolvedChoices = new Map<string, string>();
   private hotspots: Hotspot[] = [];
@@ -259,8 +262,27 @@ class VillageScene extends Phaser.Scene {
   }
 
   private checkEncounters(): void {
+    if (this.dismissedEncounterId) {
+      const dismissedEncounter = encounters.find((entry) => entry.id === this.dismissedEncounterId);
+      const dismissedHotspot = dismissedEncounter
+        ? this.hotspots.find((spot) => spot.id === dismissedEncounter.hotspotId)
+        : undefined;
+
+      if (
+        !dismissedHotspot ||
+        Phaser.Math.Distance.Between(this.player.x, this.player.y, dismissedHotspot.x, dismissedHotspot.y) >=
+          ENCOUNTER_RESET_RADIUS
+      ) {
+        this.dismissedEncounterId = null;
+      }
+    }
+
     const encounter = encounters.find((entry) => {
       if (this.completed.has(entry.id)) {
+        return false;
+      }
+
+      if (this.dismissedEncounterId === entry.id) {
         return false;
       }
 
@@ -269,7 +291,9 @@ class VillageScene extends Phaser.Scene {
         return false;
       }
 
-      return Phaser.Math.Distance.Between(this.player.x, this.player.y, hotspot.x, hotspot.y) < 28;
+      return (
+        Phaser.Math.Distance.Between(this.player.x, this.player.y, hotspot.x, hotspot.y) < ENCOUNTER_TRIGGER_RADIUS
+      );
     });
 
     if (encounter && this.activeEncounterId !== encounter.id) {
@@ -346,6 +370,7 @@ class VillageScene extends Phaser.Scene {
       return;
     }
 
+    this.dismissedEncounterId = this.activeEncounterId;
     panel.classList.add('hidden');
     this.isDialogueOpen = false;
     this.activeEncounterId = null;

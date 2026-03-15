@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: Compute build version
-        run: echo "VITE_APP_VERSION=$(node -p \"require('./package.json').version + '+run.${process.env.GITHUB_RUN_NUMBER}'\")" >> "$GITHUB_ENV"
+        run: echo "VITE_APP_VERSION=$(node -p "require('./package.json').version + '+run.' + process.env.GITHUB_RUN_NUMBER")" >> "$GITHUB_ENV"
 
       - name: Build
         env:
