@@ -396,6 +396,10 @@ h2 {
     grid-template-columns: 1fr;
   }
 
+  .game-shell {
+    gap: 0.85rem;
+  }
+
   .topbar,
   .dialogue,
   #game-root,
@@ -422,6 +426,17 @@ h2 {
     overflow-y: auto;
     padding: 1rem 1rem 1.1rem;
     box-shadow: 0 22px 48px rgba(28, 36, 22, 0.28);
+  }
+
+  #game-root {
+    width: calc(100% + 1rem);
+    min-height: clamp(20rem, 48vh, 30rem);
+    margin-inline: -0.5rem;
+  }
+
+  .panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
   }
 
   .touch-controls {
@@ -463,11 +478,16 @@ h2 {
 
 @media (max-width: 640px) {
   #app {
-    padding: 0.75rem;
+    padding: 0.5rem;
   }
 
   #game-root {
-    min-height: 0;
+    width: calc(100% + 1rem);
+    min-height: clamp(22rem, 54vh, 34rem);
+    margin-inline: -0.5rem;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
   }
 
   .start-card,
@@ -484,6 +504,15 @@ h2 {
   .topbar-actions {
     width: 100%;
     flex-wrap: wrap;
+  }
+
+  .panel {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-card,
+  .instructions-card {
+    padding: 0.85rem;
   }
 
   .dialogue {

@@ -38,4 +38,4 @@ Recent history favors short, imperative commit messages such as `improve the pla
 - confirmation that `npm run build` passed
 
 ## Deployment & Configuration Notes
-`vite.config.ts` uses `base: './'`, which keeps the build compatible with static hosting such as GitHub Pages. Browser telemetry depends on `VITE_NEW_RELIC_INGESTION_KEY`; only use a browser-safe ingestion key.
+`vite.config.ts` uses `base: './'`, which keeps the build compatible with static hosting such as GitHub Pages. Browser monitoring uses `@newrelic/browser-agent` and the `VITE_NEW_RELIC_*` values in [.env.example](/Users/david.payne/c/rogame/.env.example); populate them from the Browser app's Copy/Paste JavaScript settings in New Relic.

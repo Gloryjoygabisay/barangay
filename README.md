@@ -73,12 +73,13 @@ To add a new encounter:
 
 This Vite config uses a relative `base` path, so it can be deployed to GitHub Pages project sites without changing asset URLs.
 
-## New Relic browser logging
+## New Relic browser monitoring
 
-- Browser logging is enabled when `VITE_NEW_RELIC_INGESTION_KEY` is present at build time
-- The GitHub Pages workflow maps this from the GitHub secret `NEW_RELIC_INGESTION_KEY`
-- Because this is a static browser app, the ingestion key becomes part of the client bundle
-- Use a browser-safe, scoped ingest key rather than a private server-only credential
+- Browser monitoring uses the supported `@newrelic/browser-agent` package
+- Populate the `VITE_NEW_RELIC_*` values in `.env` from the `NREUM.init`, `NREUM.info`, and `NREUM.loader_config` values shown in your Browser app's Copy/Paste JavaScript settings
+- Start from [.env.example](/Users/david.payne/c/rogame/.env.example)
+- If the required browser agent values are missing, telemetry stays disabled
+- This static site ships browser-side monitoring configuration to the client, so only use the browser agent values from New Relic's Browser app settings
 
 Typical deployment flow:
 
