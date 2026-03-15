@@ -215,7 +215,10 @@ class VillageScene extends Phaser.Scene {
         this.thumbstickState[direction] = next;
       };
 
-      button.addEventListener('pointerdown', () => setState(true));
+      button.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
+        setState(true);
+      });
       button.addEventListener('pointerup', () => setState(false));
       button.addEventListener('pointerleave', () => setState(false));
       button.addEventListener('pointercancel', () => setState(false));

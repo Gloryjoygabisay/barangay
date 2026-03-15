@@ -379,6 +379,8 @@ h2 {
   display: none;
   pointer-events: none;
   z-index: 6;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .touch-controls button {
@@ -388,6 +390,10 @@ h2 {
   color: #294126;
   box-shadow: 0 10px 24px rgba(46, 61, 38, 0.18);
   pointer-events: auto;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .touch-button {
