@@ -392,14 +392,25 @@ h2 {
 .touch-controls button {
   width: 3rem;
   height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: rgba(255, 248, 231, 0.82);
   color: #294126;
-  box-shadow: 0 10px 24px rgba(46, 61, 38, 0.18);
+  border: 1.5px solid rgba(41, 65, 38, 0.28);
+  box-shadow: 0 4px 12px rgba(46, 61, 38, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.6);
   pointer-events: auto;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
   user-select: none;
+}
+
+.touch-controls button svg {
+  width: 58%;
+  height: 58%;
+  display: block;
+  flex-shrink: 0;
 }
 
 .touch-button {

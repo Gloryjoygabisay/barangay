@@ -199,10 +199,26 @@ class VillageScene extends Phaser.Scene {
     const controls = document.createElement('div');
     controls.className = 'touch-controls';
     controls.innerHTML = `
-      <button class="touch-button touch-up" data-direction="up" aria-label="Move up">▲</button>
-      <button class="touch-button touch-left" data-direction="left" aria-label="Move left">◀</button>
-      <button class="touch-button touch-right" data-direction="right" aria-label="Move right">▶</button>
-      <button class="touch-button touch-down" data-direction="down" aria-label="Move down">▼</button>
+      <button class="touch-button touch-up" data-direction="up" aria-label="Move up">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 4 L20 15 L15 15 L15 20 L9 20 L9 15 L4 15 Z"/>
+        </svg>
+      </button>
+      <button class="touch-button touch-left" data-direction="left" aria-label="Move left">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M4 12 L15 4 L15 9 L20 9 L20 15 L15 15 L15 20 Z"/>
+        </svg>
+      </button>
+      <button class="touch-button touch-right" data-direction="right" aria-label="Move right">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M20 12 L9 20 L9 15 L4 15 L4 9 L9 9 L9 4 Z"/>
+        </svg>
+      </button>
+      <button class="touch-button touch-down" data-direction="down" aria-label="Move down">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 20 L4 9 L9 9 L9 4 L15 4 L15 9 L20 9 Z"/>
+        </svg>
+      </button>
     `;
 
     const gameRoot = document.getElementById('game-root');
