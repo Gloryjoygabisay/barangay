@@ -28,6 +28,8 @@ const HOTSPOT_TEXTURES: Record<string, string> = {
   ridge: 'marker-ridge'
 };
 
+type Facing = 'down' | 'up' | 'side';
+
 class VillageScene extends Phaser.Scene {
   private map!: Phaser.Tilemaps.Tilemap;
   private player!: Phaser.GameObjects.Container;
@@ -43,6 +45,8 @@ class VillageScene extends Phaser.Scene {
   private thumbstickState = { left: false, right: false, up: false, down: false };
   private isDialogueOpen = false;
   private spawnPoint = { x: 80, y: 304 };
+  private facing: Facing = 'down';
+  private walkFrame = 0;
 
   constructor() {
     super('village');
@@ -51,9 +55,12 @@ class VillageScene extends Phaser.Scene {
   preload(): void {
     this.load.tilemapTiledJSON('village-map', 'assets/maps/village.json');
     this.load.image('village-tiles', 'assets/tiles/village-tileset.svg');
-    this.load.image('player-down', 'assets/sprites/player-down.svg');
-    this.load.image('player-up', 'assets/sprites/player-up.svg');
-    this.load.image('player-side', 'assets/sprites/player-side.svg');
+    this.load.image('player-down-idle', 'assets/sprites/player-down-idle.svg');
+    this.load.image('player-down-step', 'assets/sprites/player-down-step.svg');
+    this.load.image('player-up-idle', 'assets/sprites/player-up-idle.svg');
+    this.load.image('player-up-step', 'assets/sprites/player-up-step.svg');
+    this.load.image('player-side-idle', 'assets/sprites/player-side-idle.svg');
+    this.load.image('player-side-step', 'assets/sprites/player-side-step.svg');
     this.load.image('marker-bridge', 'assets/sprites/marker-bridge.svg');
     this.load.image('marker-market', 'assets/sprites/marker-market.svg');
     this.load.image('marker-ridge', 'assets/sprites/marker-ridge.svg');
@@ -179,7 +186,7 @@ class VillageScene extends Phaser.Scene {
 
   private createPlayer(): void {
     this.playerShadow = this.add.ellipse(0, 13, 18, 8, 0x000000, 0.18);
-    this.playerSprite = this.add.image(0, 0, 'player-down').setOrigin(0.5, 0.9);
+    this.playerSprite = this.add.image(0, 0, 'player-down-idle').setOrigin(0.5, 0.9);
     this.playerSprite.setDisplaySize(30, 38);
     this.player = this.add.container(this.spawnPoint.x, this.spawnPoint.y, [this.playerShadow, this.playerSprite]);
     this.player.setDepth(4);
@@ -374,18 +381,38 @@ class VillageScene extends Phaser.Scene {
   }
 
   private updatePlayerSprite(dx: number, dy: number): void {
-    if (dx === 0 && dy === 0) {
+    const moving = dx !== 0 || dy !== 0;
+
+    if (!moving) {
+      this.walkFrame = 0;
+      this.playerSprite.setTexture(`player-${this.facing}-idle`);
+      this.playerSprite.y = 0;
+      this.playerShadow.scaleX = 1;
+      if (this.facing !== 'side') {
+        this.playerSprite.setFlipX(false);
+      }
       return;
     }
 
     if (Math.abs(dx) > Math.abs(dy)) {
-      this.playerSprite.setTexture('player-side');
+      this.facing = 'side';
       this.playerSprite.setFlipX(dx < 0);
-      return;
+    } else {
+      this.facing = dy < 0 ? 'up' : 'down';
+      this.playerSprite.setFlipX(false);
     }
 
-    this.playerSprite.setFlipX(false);
-    this.playerSprite.setTexture(dy < 0 ? 'player-up' : 'player-down');
+    this.walkFrame = Math.floor(this.time.now / 180) % 2;
+    const pose = this.walkFrame === 0 ? 'idle' : 'step';
+    this.playerSprite.setTexture(`player-${this.facing}-${pose}`);
+
+    if (pose === 'step') {
+      this.playerSprite.y = 1.5;
+      this.playerShadow.scaleX = 0.92;
+    } else {
+      this.playerSprite.y = 0;
+      this.playerShadow.scaleX = 1;
+    }
   }
 
   private refreshStaticUi(): void {
