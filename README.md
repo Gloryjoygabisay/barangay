@@ -72,11 +72,12 @@ To add a new encounter:
 ## GitHub Pages deployment
 
 This Vite config uses a relative `base` path, so it can be deployed to GitHub Pages project sites without changing asset URLs.
+The deployed app version shown in the UI comes from `VITE_APP_VERSION` when present. The GitHub Pages workflow sets this to `package.json` version plus the GitHub Actions run number, for example `0.1.0+run.42`.
 
 ## New Relic browser monitoring
 
 - Browser monitoring uses the supported `@newrelic/browser-agent` package
-- Populate the `VITE_NEW_RELIC_*` values in `.env` from the `NREUM.init`, `NREUM.info`, and `NREUM.loader_config` values shown in your Browser app's Copy/Paste JavaScript settings
+- Populate the `VITE_NEW_RELIC_*` values in `.env` from the `NREUM.info` and `NREUM.loader_config` values shown in your Browser app's Copy/Paste JavaScript settings
 - Start from [.env.example](/Users/david.payne/c/rogame/.env.example)
 - If the required browser agent values are missing, telemetry stays disabled
 - This static site ships browser-side monitoring configuration to the client, so only use the browser agent values from New Relic's Browser app settings

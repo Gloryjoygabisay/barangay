@@ -6,7 +6,7 @@ import { initTelemetry, logInfo } from './telemetry';
 
 let language: Language = 'en';
 let gameController: GameController | null = null;
-const appVersion = packageJson.version;
+const appVersion = import.meta.env.VITE_APP_VERSION || packageJson.version;
 initTelemetry(appVersion);
 
 const startScreen = document.getElementById('start-screen');

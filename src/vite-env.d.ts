@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  readonly VITE_APP_VERSION?: string;
   readonly VITE_NEW_RELIC_ACCOUNT_ID?: string;
   readonly VITE_NEW_RELIC_AGENT_ID?: string;
   readonly VITE_NEW_RELIC_APPLICATION_ID?: string;
