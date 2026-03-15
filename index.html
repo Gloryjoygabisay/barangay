@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Trail Through the Barangay</title>
+    <meta
+      name="description"
+      content="A mobile-friendly narrative exploration game set in a mountain village."
+    />
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <div id="app">
+      <div id="game-shell">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" id="title-eyebrow"></p>
+            <h1 id="title-text"></h1>
+          </div>
+          <label class="language-picker">
+            <span id="language-label"></span>
+            <select id="language-select" aria-label="Choose language">
+              <option value="en">English</option>
+              <option value="tl">Filipino</option>
+            </select>
+          </label>
+        </header>
+        <div id="game-root"></div>
+        <aside class="panel">
+          <section class="stats-card">
+            <h2 id="stats-heading"></h2>
+            <div class="stats-grid">
+              <div>
+                <span id="trust-label"></span>
+                <strong id="trust-value"></strong>
+              </div>
+              <div>
+                <span id="courage-label"></span>
+                <strong id="courage-value"></strong>
+              </div>
+              <div>
+                <span id="supplies-label"></span>
+                <strong id="supplies-value"></strong>
+              </div>
+            </div>
+          </section>
+          <section class="instructions-card">
+            <h2 id="instructions-heading"></h2>
+            <p id="instructions-body"></p>
+          </section>
+        </aside>
+        <section id="dialogue-panel" class="dialogue hidden" aria-live="polite">
+          <div class="dialogue-card">
+            <p class="dialogue-location" id="dialogue-location"></p>
+            <h2 id="dialogue-title"></h2>
+            <p id="dialogue-body"></p>
+            <div id="choice-list" class="choice-list"></div>
+            <button id="close-dialogue" class="secondary-button"></button>
+          </div>
+        </section>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
