@@ -1,15 +1,18 @@
 # Trail Through the Barangay
 
-Starter repo for a mobile-friendly narrative exploration game built with Phaser 3, TypeScript, and Vite. It is designed to deploy as a static site on GitHub Pages and includes a sample bilingual encounter system in English and Filipino (Tagalog).
+`rogame` is a small static web game built with Vite, TypeScript, and Phaser 3. It presents a mobile-friendly narrative exploration demo where a young traveler walks through a mountain village, discovers encounter hotspots, and makes choices that affect `trust`, `courage`, and `supplies`.
 
-## Features
+The app is designed for static hosting and currently deploys to GitHub Pages.
 
-- Top-down village exploration scene rendered from a tilemap and authored SVG sprite assets
-- Data-driven encounters with branching responses
-- English and Filipino localization toggle
-- Stats that change based on encounter choices
-- Mobile-friendly controls with an on-screen directional pad
-- Static build output suitable for GitHub Pages
+## What is in the game
+
+- A bilingual start screen with English and Filipino language selection
+- An About panel and visible app version in both the start and in-game UI
+- A lazy-loaded Phaser scene so the game code is only loaded when the player starts
+- A hand-drawn village map with three encounter hotspots: `bridge`, `market`, and `ridge`
+- Dialogue choices that update journey stats and mark completed hotspots in the world
+- Mobile-friendly touch controls plus keyboard arrow-key movement
+- Optional New Relic browser telemetry when the required `VITE_NEW_RELIC_*` variables are set
 
 ## Quick start
 
@@ -18,79 +21,110 @@ npm install
 npm run dev
 ```
 
-Build for deployment:
+Open the Vite dev server URL in your browser to play locally.
 
-```bash
-npm run build
-```
+## Available scripts
+
+- `npm run dev` starts the Vite development server
+- `npm run build` runs TypeScript checks with `tsc` and creates a production build in `dist/`
+- `npm run preview` serves the production build locally
+- `npm test` runs the Vitest smoke suite
+- `npm run test:watch` runs Vitest in watch mode
 
 ## Project structure
 
 ```text
 public/
   assets/
-    maps/village.json  # Tilemap with spawn and hotspot points
-    sprites/           # Player and encounter marker art
-    tiles/             # Tile atlas used by the map
+    maps/village.json      Tilemap with spawn and hotspot points
+    sprites/               Player and hotspot marker SVGs
+    tiles/                 Village tileset artwork
 src/
   data/
-    encounters.ts      # Encounter content and stat effects
-    localization.ts    # UI strings and translation helper
-  game.ts              # Phaser scene and DOM UI integration
-  main.ts              # App entry
-  styles.css           # Mobile-first styling
+    encounters.ts          Encounter content, choices, and stat effects
+    localization.ts        UI strings and translation helper
+  game-loader.ts           Lazy loader for the Phaser game module
+  game.ts                  Phaser scene, movement, encounters, and UI sync
+  main.ts                  DOM wiring, start screen, about panel, and boot flow
+  styles.css               Layout and mobile-first styling
+  telemetry.ts             New Relic browser telemetry helpers
+tests/
+  app.smoke.test.ts        App shell and startup wiring smoke test
+  build.smoke.test.ts      Production build smoke test
 ```
 
-## How localization works
+## How it works
 
-- UI strings live in [src/data/localization.ts](/Users/david.payne/c/rogame/src/data/localization.ts)
-- Encounter content lives in [src/data/encounters.ts](/Users/david.payne/c/rogame/src/data/encounters.ts)
-- Each translatable string is stored as `{ en: "...", tl: "..." }`
-- Changing the language select updates the UI and any currently open encounter
+`src/main.ts` owns the HTML shell outside Phaser. It sets language, shows the start screen, opens and closes the About panel, initializes telemetry, and loads the Phaser game only after the player starts the journey.
 
-## Extending the encounter system
+`src/game.ts` contains the Phaser scene. It loads the village tilemap and SVG assets, spawns the player at the `spawn` point from the map, renders hotspot markers, handles keyboard and touch movement, and opens encounter dialogue when the player reaches a hotspot.
+
+Encounter content is data-driven in `src/data/encounters.ts`. Each encounter maps to a hotspot ID from `public/assets/maps/village.json` and provides localized copy, choices, result text, and stat effects.
+
+## Localization
+
+- Supported languages are `en` and `tl`
+- Shared UI copy lives in `src/data/localization.ts`
+- Encounter text lives in `src/data/encounters.ts`
+- Translatable strings are stored as localized objects, for example `{ en: '...', tl: '...' }`
+- Players can switch languages on the start screen and again after the game loads
+
+## Adding or editing encounters
 
 Each encounter needs:
 
-- `hotspotId` to connect it to a location in the map
-- `location`, `title`, and `body` in both languages
-- one or more `choices`
-- `effects` to update `trust`, `courage`, or `supplies`
+- a unique encounter `id`
+- a `hotspotId` that matches a hotspot object in `public/assets/maps/village.json`
+- localized `location`, `title`, and `body` text
+- one or more localized `choices`
+- `effects` that modify `trust`, `courage`, or `supplies`
 
 To add a new encounter:
 
-1. Add a hotspot point to [public/assets/maps/village.json](/Users/david.payne/c/rogame/public/assets/maps/village.json)
-2. Add an encounter with the same `hotspotId` in [src/data/encounters.ts](/Users/david.payne/c/rogame/src/data/encounters.ts)
+1. Add a hotspot point to the `Points` object layer in `public/assets/maps/village.json`
+2. Add a matching encounter entry in `src/data/encounters.ts`
+3. If the hotspot needs custom marker art, register its texture in `HOTSPOT_TEXTURES` in `src/game.ts`
 
-## Editing the world art
+## Testing
 
-- The playable world is now rendered from [public/assets/maps/village.json](/Users/david.payne/c/rogame/public/assets/maps/village.json)
-- The tiles come from [public/assets/tiles/village-tileset.svg](/Users/david.payne/c/rogame/public/assets/tiles/village-tileset.svg)
-- The player and encounter icons are in [public/assets/sprites](/Users/david.payne/c/rogame/public/assets/sprites)
-- The map includes a `spawn` point plus `hotspot` points named `bridge`, `market`, and `ridge`
+The repo currently uses a small Vitest smoke suite instead of deep gameplay tests.
+
+- `tests/app.smoke.test.ts` verifies the app shell, language switching, About panel, and game startup wiring
+- `tests/build.smoke.test.ts` verifies that a production build succeeds and emits loadable assets
+
+Before shipping changes, run:
+
+```bash
+npm test
+npm run build
+```
 
 ## GitHub Pages deployment
 
-This Vite config uses a relative `base` path, so it can be deployed to GitHub Pages project sites without changing asset URLs.
-The deployed app version shown in the UI comes from `VITE_APP_VERSION` when present. The GitHub Pages workflow sets this to `package.json` version plus the GitHub Actions run number, for example `0.1.0+run.42`.
+`vite.config.ts` uses `base: './'`, which keeps the generated asset URLs compatible with static hosting.
 
-## New Relic browser monitoring
+The GitHub Pages workflow lives at `.github/workflows/deploy.yml`. On pushes to `main`, it:
 
-- Browser monitoring uses the supported `@newrelic/browser-agent` package
-- Populate the `VITE_NEW_RELIC_*` values in `.env` from the `NREUM.info` and `NREUM.loader_config` values shown in your Browser app's Copy/Paste JavaScript settings
-- Start from [.env.example](/Users/david.payne/c/rogame/.env.example)
-- If the required browser agent values are missing, telemetry stays disabled
-- This static site ships browser-side monitoring configuration to the client, so only use the browser agent values from New Relic's Browser app settings
+1. installs dependencies with `npm ci`
+2. computes `VITE_APP_VERSION` from `package.json` plus the GitHub Actions run number
+3. builds the app
+4. uploads `dist/`
+5. deploys the site with GitHub Pages
 
-Typical deployment flow:
+## New Relic browser telemetry
 
-1. Push this repo to GitHub
-2. Enable GitHub Pages with a GitHub Actions workflow or the `dist/` artifact
-3. Run `npm run build`
-4. Publish the generated `dist/` folder
+Telemetry is optional. If `VITE_NEW_RELIC_APPLICATION_ID` and `VITE_NEW_RELIC_LICENSE_KEY` are missing, the app runs with telemetry disabled.
 
-If you want, the next step can be adding:
+Start from `.env.example`:
 
-- a save system with local storage
-- a larger quest graph with inventory and relationship flags
-- collisions, NPC patrols, and multi-room maps
+```bash
+VITE_NEW_RELIC_APPLICATION_ID=
+VITE_NEW_RELIC_LICENSE_KEY=
+VITE_NEW_RELIC_AGENT_ID=
+VITE_NEW_RELIC_ACCOUNT_ID=
+VITE_NEW_RELIC_TRUST_KEY=
+VITE_NEW_RELIC_BEACON=bam.nr-data.net
+VITE_NEW_RELIC_ERROR_BEACON=bam.nr-data.net
+```
+
+Use the Browser app Copy/Paste JavaScript settings from New Relic to populate these values.
