@@ -4,7 +4,7 @@ Starter repo for a mobile-friendly narrative exploration game built with Phaser 
 
 ## Features
 
-- Top-down village exploration scene with simple generated art
+- Top-down village exploration scene rendered from a tilemap and authored SVG sprite assets
 - Data-driven encounters with branching responses
 - English and Filipino localization toggle
 - Stats that change based on encounter choices
@@ -27,6 +27,11 @@ npm run build
 ## Project structure
 
 ```text
+public/
+  assets/
+    maps/village.json  # Tilemap with spawn and hotspot points
+    sprites/           # Player and encounter marker art
+    tiles/             # Tile atlas used by the map
 src/
   data/
     encounters.ts      # Encounter content and stat effects
@@ -54,8 +59,15 @@ Each encounter needs:
 
 To add a new encounter:
 
-1. Add a hotspot to `HOTSPOTS` in [src/game.ts](/Users/david.payne/c/rogame/src/game.ts)
+1. Add a hotspot point to [public/assets/maps/village.json](/Users/david.payne/c/rogame/public/assets/maps/village.json)
 2. Add an encounter with the same `hotspotId` in [src/data/encounters.ts](/Users/david.payne/c/rogame/src/data/encounters.ts)
+
+## Editing the world art
+
+- The playable world is now rendered from [public/assets/maps/village.json](/Users/david.payne/c/rogame/public/assets/maps/village.json)
+- The tiles come from [public/assets/tiles/village-tileset.svg](/Users/david.payne/c/rogame/public/assets/tiles/village-tileset.svg)
+- The player and encounter icons are in [public/assets/sprites](/Users/david.payne/c/rogame/public/assets/sprites)
+- The map includes a `spawn` point plus `hotspot` points named `bridge`, `market`, and `ridge`
 
 ## GitHub Pages deployment
 
@@ -70,6 +82,6 @@ Typical deployment flow:
 
 If you want, the next step can be adding:
 
-- sprite art and tilemaps
 - a save system with local storage
 - a larger quest graph with inventory and relationship flags
+- collisions, NPC patrols, and multi-room maps

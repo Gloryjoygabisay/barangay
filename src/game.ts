@@ -8,8 +8,8 @@ type Hotspot = {
   id: string;
   x: number;
   y: number;
-  label: string;
-  color: number;
+  sprite: Phaser.GameObjects.Image;
+  label: Phaser.GameObjects.Text;
 };
 
 const STARTING_STATS: GameStats = {
@@ -18,31 +18,49 @@ const STARTING_STATS: GameStats = {
   supplies: 3
 };
 
-const HOTSPOTS: Hotspot[] = [
-  { id: 'bridge', x: 136, y: 216, label: 'Bridge', color: 0xf4d35e },
-  { id: 'market', x: 320, y: 168, label: 'Market', color: 0xee964b },
-  { id: 'ridge', x: 488, y: 116, label: 'Ridge', color: 0xf95738 }
-];
+const MAP_WIDTH = 640;
+const MAP_HEIGHT = 352;
+
+const HOTSPOT_TEXTURES: Record<string, string> = {
+  bridge: 'marker-bridge',
+  market: 'marker-market',
+  ridge: 'marker-ridge'
+};
 
 class VillageScene extends Phaser.Scene {
+  private map!: Phaser.Tilemaps.Tilemap;
   private player!: Phaser.GameObjects.Container;
+  private playerSprite!: Phaser.GameObjects.Image;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private language: Language = 'en';
   private stats: GameStats = { ...STARTING_STATS };
   private activeEncounterId: string | null = null;
   private completed = new Set<string>();
-  private encounterCircles: Phaser.GameObjects.Arc[] = [];
-  private encounterLabels: Phaser.GameObjects.Text[] = [];
+  private resolvedChoices = new Map<string, string>();
+  private hotspots: Hotspot[] = [];
   private thumbstickState = { left: false, right: false, up: false, down: false };
   private isDialogueOpen = false;
+  private spawnPoint = { x: 80, y: 304 };
 
   constructor() {
     super('village');
   }
 
+  preload(): void {
+    this.load.tilemapTiledJSON('village-map', 'assets/maps/village.json');
+    this.load.image('village-tiles', 'assets/tiles/village-tileset.svg');
+    this.load.image('player-down', 'assets/sprites/player-down.svg');
+    this.load.image('player-up', 'assets/sprites/player-up.svg');
+    this.load.image('player-side', 'assets/sprites/player-side.svg');
+    this.load.image('marker-bridge', 'assets/sprites/marker-bridge.svg');
+    this.load.image('marker-market', 'assets/sprites/marker-market.svg');
+    this.load.image('marker-ridge', 'assets/sprites/marker-ridge.svg');
+  }
+
   create(): void {
     this.cursors = this.input.keyboard?.createCursorKeys() ?? ({} as Phaser.Types.Input.Keyboard.CursorKeys);
-    this.drawWorld();
+    this.createMap();
+    this.createHotspots();
     this.createPlayer();
     this.createTouchControls();
     this.hookUi();
@@ -72,8 +90,10 @@ class VillageScene extends Phaser.Scene {
       dy += speed;
     }
 
-    this.player.x = Phaser.Math.Clamp(this.player.x + dx, 32, 608);
-    this.player.y = Phaser.Math.Clamp(this.player.y + dy, 36, 324);
+    this.player.x = Phaser.Math.Clamp(this.player.x + dx, 24, MAP_WIDTH - 24);
+    this.player.y = Phaser.Math.Clamp(this.player.y + dy, 28, MAP_HEIGHT - 12);
+
+    this.updatePlayerSprite(dx, dy);
 
     this.checkEncounters();
   }
@@ -82,6 +102,7 @@ class VillageScene extends Phaser.Scene {
     this.language = language;
     this.refreshStaticUi();
     this.refreshStatsUi();
+    this.refreshHotspotLabels();
 
     const active = this.getActiveEncounter();
     if (active) {
@@ -89,50 +110,76 @@ class VillageScene extends Phaser.Scene {
     }
   }
 
-  private drawWorld(): void {
-    this.add.rectangle(320, 180, 640, 360, 0x92c47c);
-    this.add.rectangle(320, 280, 640, 140, 0x7a5c3c, 0.35);
-    this.add.rectangle(130, 220, 150, 28, 0x5a4630, 0.9).setAngle(-8);
-    this.add.rectangle(130, 248, 150, 24, 0x3f6d4f, 0.45).setAngle(-8);
+  private createMap(): void {
+    this.map = this.make.tilemap({ key: 'village-map' });
+    const tileset = this.map.addTilesetImage('village-tileset', 'village-tiles', 32, 32, 0, 0);
 
-    for (let row = 0; row < 4; row += 1) {
-      this.add.rectangle(460, 60 + row * 36, 180, 20, 0x7bb661, 0.85);
-      this.add.rectangle(460, 74 + row * 36, 180, 10, 0x5f8f46, 0.8);
+    if (!tileset) {
+      throw new Error('Tileset failed to load for village-map.');
     }
 
-    this.add.circle(318, 170, 54, 0xd99f6c, 0.85);
-    this.add.circle(352, 152, 30, 0xd99f6c, 0.8);
-    this.add.rectangle(302, 170, 28, 22, 0x704c24);
-    this.add.rectangle(336, 150, 24, 18, 0x704c24);
-    this.add.rectangle(508, 98, 124, 20, 0xa7d38c, 0.95).setAngle(-9);
+    this.map.createLayer('Ground', tileset, 0, 0)?.setDepth(0);
+    this.map.createLayer('Decor', tileset, 0, 0)?.setDepth(1);
+    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+  }
+
+  private createHotspots(): void {
+    const pointLayer = this.map.getObjectLayer('Points');
+    const pointObjects = pointLayer?.objects ?? [];
 
     const titleStyle: Phaser.Types.GameObjects.Text.TextStyle = {
       fontFamily: 'Georgia, serif',
-      fontSize: '14px',
-      color: '#17301d'
+      fontSize: '13px',
+      color: '#18311d',
+      align: 'center'
     };
 
-    this.encounterCircles = HOTSPOTS.map((hotspot) =>
-      this.add.circle(hotspot.x, hotspot.y, 18, hotspot.color, 0.92).setStrokeStyle(3, 0xfff5d6, 0.9)
-    );
-    this.encounterLabels = HOTSPOTS.map((hotspot) =>
-      this.add.text(hotspot.x - 30, hotspot.y + 24, hotspot.label, titleStyle)
-    );
+    const spawn = pointObjects.find((object) => object.type === 'spawn');
+    if (spawn?.x !== undefined && spawn?.y !== undefined) {
+      this.spawnPoint = { x: spawn.x, y: spawn.y };
+    }
 
-    this.add.text(22, 18, 'Barangay Trail', {
-      fontFamily: 'Georgia, serif',
-      fontSize: '18px',
-      color: '#fff6dc'
+    this.hotspots = encounters.flatMap((encounter) => {
+      const point = pointObjects.find(
+        (object) => object.type === 'hotspot' && object.name === encounter.hotspotId
+      );
+      if (point?.x === undefined || point.y === undefined) {
+        return [];
+      }
+
+      const sprite = this.add
+        .image(point.x, point.y - 20, HOTSPOT_TEXTURES[encounter.hotspotId] ?? 'marker-market')
+        .setDisplaySize(36, 36)
+        .setDepth(3);
+
+      const label = this.add
+        .text(point.x - 48, point.y + 8, localizeText(encounter.location, this.language), titleStyle)
+        .setDepth(3)
+        .setWordWrapWidth(96)
+        .setAlign('center');
+
+      return [
+        {
+          id: encounter.hotspotId,
+          x: point.x,
+          y: point.y,
+          sprite,
+          label
+        }
+      ];
     });
   }
 
   private createPlayer(): void {
-    const body = this.add.rectangle(0, 4, 22, 28, 0x223d7a, 1);
-    const head = this.add.rectangle(0, -12, 14, 12, 0xf6d0ad, 1);
-    this.player = this.add.container(72, 282, [body, head]);
+    const shadow = this.add.ellipse(0, 13, 18, 8, 0x000000, 0.18);
+    this.playerSprite = this.add.image(0, 0, 'player-down').setOrigin(0.5, 0.9);
+    this.playerSprite.setDisplaySize(30, 38);
+    this.player = this.add.container(this.spawnPoint.x, this.spawnPoint.y, [shadow, this.playerSprite]);
+    this.player.setDepth(4);
   }
 
   private createTouchControls(): void {
+    document.querySelector('.touch-controls')?.remove();
     const controls = document.createElement('div');
     controls.className = 'touch-controls';
     controls.innerHTML = `
@@ -179,7 +226,7 @@ class VillageScene extends Phaser.Scene {
         return false;
       }
 
-      const hotspot = HOTSPOTS.find((spot) => spot.id === entry.hotspotId);
+      const hotspot = this.hotspots.find((spot) => spot.id === entry.hotspotId);
       if (!hotspot) {
         return false;
       }
@@ -208,25 +255,34 @@ class VillageScene extends Phaser.Scene {
     panel.classList.remove('hidden');
     location.textContent = localizeText(encounter.location, this.language);
     title.textContent = localizeText(encounter.title, this.language);
-    body.textContent = `${localizeText(encounter.body, this.language)} ${t('encounterPrompt', this.language)}`;
 
     choiceList.replaceChildren();
-    encounter.choices.forEach((choice) => {
-      const button = document.createElement('button');
-      button.className = 'choice-button';
-      button.textContent = localizeText(choice.text, this.language);
-      button.addEventListener('click', () => {
-        Object.entries(choice.effects).forEach(([key, value]) => {
-          this.stats[key as StatKey] += value ?? 0;
+    const resolvedChoiceId = this.resolvedChoices.get(encounter.id);
+    if (resolvedChoiceId) {
+      const resolvedChoice = encounter.choices.find((choice) => choice.id === resolvedChoiceId);
+      body.textContent = resolvedChoice
+        ? `${t('resultPrefix', this.language)}: ${localizeText(resolvedChoice.result, this.language)}`
+        : localizeText(encounter.body, this.language);
+    } else {
+      body.textContent = `${localizeText(encounter.body, this.language)} ${t('encounterPrompt', this.language)}`;
+      encounter.choices.forEach((choice) => {
+        const button = document.createElement('button');
+        button.className = 'choice-button';
+        button.textContent = localizeText(choice.text, this.language);
+        button.addEventListener('click', () => {
+          Object.entries(choice.effects).forEach(([key, value]) => {
+            this.stats[key as StatKey] += value ?? 0;
+          });
+          this.completed.add(encounter.id);
+          this.resolvedChoices.set(encounter.id, choice.id);
+          this.refreshStatsUi();
+          body.textContent = `${t('resultPrefix', this.language)}: ${localizeText(choice.result, this.language)}`;
+          choiceList.replaceChildren();
+          this.markHotspotCompleted(encounter.hotspotId);
         });
-        this.completed.add(encounter.id);
-        this.refreshStatsUi();
-        body.textContent = `${t('resultPrefix', this.language)}: ${localizeText(choice.result, this.language)}`;
-        choiceList.replaceChildren();
-        this.markHotspotCompleted(encounter.hotspotId);
+        choiceList.appendChild(button);
       });
-      choiceList.appendChild(button);
-    });
+    }
 
     const closeButton = document.getElementById('close-dialogue');
     if (closeButton) {
@@ -252,17 +308,43 @@ class VillageScene extends Phaser.Scene {
   }
 
   private markHotspotCompleted(hotspotId: string): void {
-    const index = HOTSPOTS.findIndex((spot) => spot.id === hotspotId);
-    if (index === -1) {
+    const hotspot = this.hotspots.find((spot) => spot.id === hotspotId);
+    if (!hotspot) {
       return;
     }
 
-    this.encounterCircles[index]?.setFillStyle(0x7a7a7a, 0.7);
-    this.encounterLabels[index]?.setColor('#51604f');
+    hotspot.sprite.setTint(0x7a7a7a).setAlpha(0.75);
+    hotspot.label.setColor('#586155');
     const closeButton = document.getElementById('close-dialogue');
     if (closeButton) {
       closeButton.textContent = t('completed', this.language);
     }
+  }
+
+  private refreshHotspotLabels(): void {
+    this.hotspots.forEach((hotspot) => {
+      const encounter = encounters.find((entry) => entry.hotspotId === hotspot.id);
+      if (!encounter) {
+        return;
+      }
+
+      hotspot.label.setText(localizeText(encounter.location, this.language));
+    });
+  }
+
+  private updatePlayerSprite(dx: number, dy: number): void {
+    if (dx === 0 && dy === 0) {
+      return;
+    }
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+      this.playerSprite.setTexture('player-side');
+      this.playerSprite.setFlipX(dx < 0);
+      return;
+    }
+
+    this.playerSprite.setFlipX(false);
+    this.playerSprite.setTexture(dy < 0 ? 'player-up' : 'player-down');
   }
 
   private refreshStaticUi(): void {
@@ -303,8 +385,8 @@ class VillageScene extends Phaser.Scene {
 export function createGame(): Phaser.Game {
   return new Phaser.Game({
     type: Phaser.AUTO,
-    width: 640,
-    height: 360,
+    width: MAP_WIDTH,
+    height: MAP_HEIGHT,
     parent: 'game-root',
     backgroundColor: '#254336',
     scale: {

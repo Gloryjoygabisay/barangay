@@ -1,0 +1,132 @@
+{
+  "compressionlevel": -1,
+  "height": 11,
+  "infinite": false,
+  "layers": [
+    {
+      "data": [
+        1, 1, 3, 3, 1, 1, 1, 1, 1, 1, 1, 9, 9, 4, 10, 10, 10, 10, 4, 1,
+        1, 1, 3, 3, 1, 1, 1, 1, 1, 1, 1, 9, 4, 10, 10, 10, 10, 10, 4, 1,
+        1, 1, 3, 3, 1, 1, 1, 1, 1, 1, 1, 9, 4, 10, 10, 10, 10, 10, 4, 1,
+        1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 1, 9, 4, 10, 10, 10, 10, 10, 4, 1,
+        1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 1, 1, 4, 10, 10, 10, 10, 10, 4, 1,
+        1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 1, 1, 4, 10, 10, 10, 10, 10, 4, 1,
+        1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 1, 1, 4, 10, 10, 10, 10, 10, 4, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 10, 10, 10, 4, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 10, 10, 10, 4, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+      ],
+      "height": 11,
+      "id": 1,
+      "name": "Ground",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 20,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "data": [
+        0, 12, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 2, 2, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 8, 6, 6, 6, 2, 2, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 7, 7, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 12, 2, 2, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0
+      ],
+      "height": 11,
+      "id": 2,
+      "name": "Decor",
+      "opacity": 1,
+      "type": "tilelayer",
+      "visible": true,
+      "width": 20,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "draworder": "topdown",
+      "id": 3,
+      "name": "Points",
+      "objects": [
+        {
+          "id": 1,
+          "name": "spawn",
+          "point": true,
+          "rotation": 0,
+          "type": "spawn",
+          "visible": true,
+          "x": 80,
+          "y": 304
+        },
+        {
+          "id": 2,
+          "name": "bridge",
+          "point": true,
+          "rotation": 0,
+          "type": "hotspot",
+          "visible": true,
+          "x": 144,
+          "y": 208
+        },
+        {
+          "id": 3,
+          "name": "market",
+          "point": true,
+          "rotation": 0,
+          "type": "hotspot",
+          "visible": true,
+          "x": 336,
+          "y": 176
+        },
+        {
+          "id": 4,
+          "name": "ridge",
+          "point": true,
+          "rotation": 0,
+          "type": "hotspot",
+          "visible": true,
+          "x": 528,
+          "y": 112
+        }
+      ],
+      "opacity": 1,
+      "type": "objectgroup",
+      "visible": true,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "nextlayerid": 4,
+  "nextobjectid": 5,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.11.0",
+  "tileheight": 32,
+  "tilesets": [
+    {
+      "columns": 4,
+      "firstgid": 1,
+      "image": "../tiles/village-tileset.svg",
+      "imageheight": 128,
+      "imagewidth": 128,
+      "margin": 0,
+      "name": "village-tileset",
+      "spacing": 0,
+      "tilecount": 16,
+      "tileheight": 32,
+      "tilewidth": 32
+    }
+  ],
+  "tilewidth": 32,
+  "type": "map",
+  "version": "1.10",
+  "width": 20
+}
