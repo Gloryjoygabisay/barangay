@@ -210,14 +210,6 @@ class VillageScene extends Phaser.Scene {
   private hookUi(): void {
     const closeButton = document.getElementById('close-dialogue');
     closeButton?.addEventListener('click', () => this.closeDialogue());
-
-    const languageSelect = document.getElementById('language-select') as HTMLSelectElement | null;
-    if (languageSelect) {
-      languageSelect.value = this.language;
-      languageSelect.addEventListener('change', () => {
-        this.setLanguage(languageSelect.value as Language);
-      });
-    }
   }
 
   private checkEncounters(): void {
@@ -382,8 +374,12 @@ class VillageScene extends Phaser.Scene {
   }
 }
 
-export function createGame(): Phaser.Game {
-  return new Phaser.Game({
+export type GameController = {
+  setLanguage: (language: Language) => void;
+};
+
+export function createGame(initialLanguage: Language): GameController {
+  const game = new Phaser.Game({
     type: Phaser.AUTO,
     width: MAP_WIDTH,
     height: MAP_HEIGHT,
@@ -395,4 +391,20 @@ export function createGame(): Phaser.Game {
     },
     scene: [VillageScene]
   });
+
+  let scene: VillageScene | null = null;
+  let pendingLanguage = initialLanguage;
+
+  game.events.once(Phaser.Core.Events.READY, () => {
+    scene = game.scene.getScene('village') as VillageScene;
+    scene.setLanguage(pendingLanguage);
+    game.scale.refresh();
+  });
+
+  return {
+    setLanguage(language: Language) {
+      pendingLanguage = language;
+      scene?.setLanguage(language);
+    }
+  };
 }

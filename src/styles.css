@@ -26,9 +26,80 @@ select {
   padding: 1rem;
 }
 
-#game-shell {
+.hidden {
+  display: none !important;
+}
+
+.start-screen,
+.game-shell {
   width: min(100%, 1120px);
   margin: 0 auto;
+}
+
+.start-screen {
+  min-height: calc(100vh - 2rem);
+  display: grid;
+  place-items: center;
+}
+
+.start-card {
+  width: min(100%, 960px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.9fr);
+  gap: 1.25rem;
+  padding: 1.25rem;
+  background:
+    linear-gradient(145deg, rgba(255, 248, 229, 0.94), rgba(243, 225, 186, 0.88)),
+    radial-gradient(circle at top left, rgba(139, 177, 102, 0.28), transparent 30%);
+  border: 1px solid rgba(104, 84, 52, 0.22);
+  border-radius: 28px;
+  box-shadow: 0 22px 46px rgba(61, 52, 33, 0.18);
+}
+
+.start-copy {
+  padding: 1rem;
+}
+
+.start-blurb {
+  margin-top: 1rem;
+  max-width: 56ch;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.start-features {
+  margin-top: 1.4rem;
+}
+
+.start-features h2 {
+  font-size: 1.2rem;
+}
+
+.start-features ul {
+  margin: 0.85rem 0 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.75rem;
+  line-height: 1.5;
+}
+
+.start-actions {
+  display: grid;
+  align-content: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: rgba(255, 252, 244, 0.72);
+  border-radius: 22px;
+  border: 1px solid rgba(149, 123, 78, 0.16);
+}
+
+.start-hint {
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #5b573c;
+}
+
+.game-shell {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
   gap: 1rem;
@@ -89,6 +160,10 @@ h2 {
   align-items: center;
   gap: 0.65rem;
   padding: 0.75rem 1rem;
+}
+
+.language-picker-large {
+  justify-content: space-between;
 }
 
 .language-picker select {
@@ -154,10 +229,6 @@ h2 {
   bottom: 1rem;
 }
 
-.dialogue.hidden {
-  display: none;
-}
-
 .dialogue-card {
   padding: 1rem;
 }
@@ -185,6 +256,7 @@ h2 {
 }
 
 .choice-button,
+.primary-button,
 .secondary-button,
 .touch-controls button {
   border: 0;
@@ -200,6 +272,16 @@ h2 {
   text-align: left;
 }
 
+.primary-button {
+  padding: 0.95rem 1.1rem;
+  background: linear-gradient(180deg, #44693f, #2d4a2e);
+  color: #fffef8;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 12px 28px rgba(46, 74, 43, 0.24);
+}
+
 .secondary-button {
   margin-top: 1rem;
   padding: 0.75rem 1rem;
@@ -208,6 +290,7 @@ h2 {
 }
 
 .choice-button:active,
+.primary-button:active,
 .secondary-button:active,
 .touch-controls button:active {
   transform: translateY(1px);
@@ -237,7 +320,8 @@ h2 {
 }
 
 @media (max-width: 900px) {
-  #game-shell {
+  .start-card,
+  .game-shell {
     grid-template-columns: 1fr;
   }
 
@@ -260,6 +344,12 @@ h2 {
 @media (max-width: 640px) {
   #app {
     padding: 0.75rem;
+  }
+
+  .start-card,
+  .start-actions,
+  .start-copy {
+    padding: 1rem;
   }
 
   .topbar {

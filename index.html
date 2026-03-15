@@ -15,7 +15,35 @@
   </head>
   <body>
     <div id="app">
-      <div id="game-shell">
+      <section id="start-screen" class="start-screen">
+        <div class="start-card">
+          <div class="start-copy">
+            <p class="eyebrow" id="start-eyebrow"></p>
+            <h1 id="start-title"></h1>
+            <p id="start-blurb" class="start-blurb"></p>
+            <div class="start-features">
+              <h2 id="start-features-heading"></h2>
+              <ul>
+                <li id="start-feature-village"></li>
+                <li id="start-feature-choices"></li>
+                <li id="start-feature-language"></li>
+              </ul>
+            </div>
+          </div>
+          <div class="start-actions">
+            <label class="language-picker language-picker-large">
+              <span id="start-language-label"></span>
+              <select id="start-language-select" aria-label="Choose language before starting">
+                <option value="en">English</option>
+                <option value="tl">Filipino</option>
+              </select>
+            </label>
+            <button id="start-button" class="primary-button"></button>
+            <p id="start-hint" class="start-hint"></p>
+          </div>
+        </div>
+      </section>
+      <div id="game-shell" class="game-shell hidden">
         <header class="topbar">
           <div>
             <p class="eyebrow" id="title-eyebrow"></p>
