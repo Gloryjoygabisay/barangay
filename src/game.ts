@@ -32,6 +32,7 @@ class VillageScene extends Phaser.Scene {
   private map!: Phaser.Tilemaps.Tilemap;
   private player!: Phaser.GameObjects.Container;
   private playerSprite!: Phaser.GameObjects.Image;
+  private playerShadow!: Phaser.GameObjects.Ellipse;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private language: Language = 'en';
   private stats: GameStats = { ...STARTING_STATS };
@@ -63,10 +64,15 @@ class VillageScene extends Phaser.Scene {
     this.createMap();
     this.createHotspots();
     this.createPlayer();
+    this.applyViewportMode();
     this.createTouchControls();
     this.hookUi();
     this.refreshStaticUi();
     this.refreshStatsUi();
+    this.scale.on(Phaser.Scale.Events.RESIZE, this.handleResize, this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.scale.off(Phaser.Scale.Events.RESIZE, this.handleResize, this);
+    });
   }
 
   update(): void {
@@ -172,10 +178,10 @@ class VillageScene extends Phaser.Scene {
   }
 
   private createPlayer(): void {
-    const shadow = this.add.ellipse(0, 13, 18, 8, 0x000000, 0.18);
+    this.playerShadow = this.add.ellipse(0, 13, 18, 8, 0x000000, 0.18);
     this.playerSprite = this.add.image(0, 0, 'player-down').setOrigin(0.5, 0.9);
     this.playerSprite.setDisplaySize(30, 38);
-    this.player = this.add.container(this.spawnPoint.x, this.spawnPoint.y, [shadow, this.playerSprite]);
+    this.player = this.add.container(this.spawnPoint.x, this.spawnPoint.y, [this.playerShadow, this.playerSprite]);
     this.player.setDepth(4);
   }
 
@@ -209,6 +215,40 @@ class VillageScene extends Phaser.Scene {
   private hookUi(): void {
     const closeButton = document.getElementById('close-dialogue');
     closeButton?.addEventListener('click', () => this.closeDialogue());
+  }
+
+  private handleResize(): void {
+    this.applyViewportMode();
+  }
+
+  private applyViewportMode(): void {
+    const camera = this.cameras.main;
+    const isMobile = this.scale.width <= 900;
+
+    this.playerSprite.setDisplaySize(isMobile ? 38 : 30, isMobile ? 48 : 38);
+    this.playerShadow.setSize(isMobile ? 24 : 18, isMobile ? 10 : 8);
+
+    this.hotspots.forEach((hotspot) => {
+      hotspot.sprite.setDisplaySize(isMobile ? 52 : 36, isMobile ? 52 : 36);
+      hotspot.sprite.setPosition(hotspot.x, hotspot.y - (isMobile ? 28 : 20));
+      hotspot.label
+        .setFontSize(isMobile ? '16px' : '13px')
+        .setWordWrapWidth(isMobile ? 128 : 96)
+        .setPosition(hotspot.x - (isMobile ? 64 : 48), hotspot.y + (isMobile ? 12 : 8));
+    });
+
+    camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+
+    if (isMobile) {
+      camera.setZoom(1.85);
+      camera.setDeadzone(110, 72);
+      camera.startFollow(this.player, true, 0.12, 0.12);
+      return;
+    }
+
+    camera.stopFollow();
+    camera.setZoom(1);
+    camera.centerOn(MAP_WIDTH / 2, MAP_HEIGHT / 2);
   }
 
   private checkEncounters(): void {
@@ -264,23 +304,23 @@ class VillageScene extends Phaser.Scene {
           Object.entries(choice.effects).forEach(([key, value]) => {
             this.stats[key as StatKey] += value ?? 0;
           });
-        this.completed.add(encounter.id);
-        this.resolvedChoices.set(encounter.id, choice.id);
-        this.refreshStatsUi();
-        logInfo('Encounter resolved', {
-          eventName: 'encounter_resolved',
-          encounterId: encounter.id,
-          hotspotId: encounter.hotspotId,
-          choiceId: choice.id,
-          language: this.language,
-          trust: this.stats.trust,
-          courage: this.stats.courage,
-          supplies: this.stats.supplies
+          this.completed.add(encounter.id);
+          this.resolvedChoices.set(encounter.id, choice.id);
+          this.refreshStatsUi();
+          logInfo('Encounter resolved', {
+            eventName: 'encounter_resolved',
+            encounterId: encounter.id,
+            hotspotId: encounter.hotspotId,
+            choiceId: choice.id,
+            language: this.language,
+            trust: this.stats.trust,
+            courage: this.stats.courage,
+            supplies: this.stats.supplies
+          });
+          body.textContent = `${t('resultPrefix', this.language)}: ${localizeText(choice.result, this.language)}`;
+          choiceList.replaceChildren();
+          this.markHotspotCompleted(encounter.hotspotId);
         });
-        body.textContent = `${t('resultPrefix', this.language)}: ${localizeText(choice.result, this.language)}`;
-        choiceList.replaceChildren();
-        this.markHotspotCompleted(encounter.hotspotId);
-      });
         choiceList.appendChild(button);
       });
     }

@@ -192,6 +192,7 @@ h2 {
   min-height: 360px;
   overflow: hidden;
   position: relative;
+  aspect-ratio: 640 / 352;
   border-radius: 22px;
   border: 2px solid rgba(251, 243, 218, 0.75);
   box-shadow: 0 20px 40px rgba(35, 49, 23, 0.28);
@@ -426,11 +427,47 @@ h2 {
   .touch-controls {
     display: grid;
   }
+
+  .touch-controls button {
+    width: 3.35rem;
+    height: 3.35rem;
+    background: rgba(255, 248, 231, 0.88);
+  }
+
+  .touch-up,
+  .touch-down {
+    left: 50%;
+  }
+
+  .touch-up {
+    top: 0.65rem;
+  }
+
+  .touch-down {
+    bottom: 0.65rem;
+  }
+
+  .touch-left,
+  .touch-right {
+    top: 50%;
+  }
+
+  .touch-left {
+    left: 0.65rem;
+  }
+
+  .touch-right {
+    right: 0.65rem;
+  }
 }
 
 @media (max-width: 640px) {
   #app {
     padding: 0.75rem;
+  }
+
+  #game-root {
+    min-height: 0;
   }
 
   .start-card,
@@ -463,6 +500,28 @@ h2 {
   .secondary-button,
   .compact-button {
     width: 100%;
+  }
+
+  .touch-controls button {
+    width: 3.15rem;
+    height: 3.15rem;
+    border-radius: 999px;
+  }
+
+  .touch-up {
+    top: 0.5rem;
+  }
+
+  .touch-down {
+    bottom: 0.5rem;
+  }
+
+  .touch-left {
+    left: 0.5rem;
+  }
+
+  .touch-right {
+    right: 0.5rem;
   }
 
   .stats-grid {
