@@ -3,14 +3,12 @@ import type { GameController } from './game';
 import { loadGameModule } from './game-loader';
 import { t, type Language } from './data/localization';
 import packageJson from '../package.json';
-import { initTelemetry, logInfo } from './telemetry';
 
 let language: Language = 'en';
 let gameController: GameController | null = null;
 let gameModulePromise: Promise<typeof import('./game')> | null = null;
 let isStarting = false;
 const appVersion = import.meta.env.VITE_APP_VERSION || packageJson.version;
-initTelemetry(appVersion);
 
 const startScreen = document.getElementById('start-screen');
 const gameShell = document.getElementById('game-shell');
@@ -36,9 +34,6 @@ function setVersionText(id: string): void {
 
 function openAbout(): void {
   aboutPanel?.classList.remove('hidden');
-  logInfo('About opened', {
-    eventName: 'about_opened'
-  });
 }
 
 function closeAbout(): void {
@@ -123,11 +118,7 @@ async function startJourney(): Promise<void> {
     try {
       const { createGame } = await getGameModule();
       gameController = createGame(language);
-      logInfo('Journey started', {
-        eventName: 'journey_started',
-        language
-      });
-    } catch (error) {
+    } catch {
       setStartLoadingState(false, true);
       return;
     }

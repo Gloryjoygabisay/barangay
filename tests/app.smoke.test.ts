@@ -4,18 +4,11 @@ import { describe, expect, it, beforeEach, vi } from 'vitest';
 
 const createGameMock = vi.fn();
 const setLanguageMock = vi.fn();
-const initTelemetryMock = vi.fn();
-const logInfoMock = vi.fn();
 
 vi.mock('../src/game-loader', () => ({
   loadGameModule: vi.fn(async () => ({
     createGame: createGameMock
   }))
-}));
-
-vi.mock('../src/telemetry', () => ({
-  initTelemetry: initTelemetryMock,
-  logInfo: logInfoMock
 }));
 
 function loadHtmlShell(): void {
@@ -46,7 +39,6 @@ describe('app bootstrap smoke test', () => {
   it('renders the start screen and wires core UI actions', async () => {
     await import('../src/main');
 
-    expect(initTelemetryMock).toHaveBeenCalledOnce();
     expect(document.getElementById('start-title')?.textContent).toBe('Trail Through the Barangay');
     expect(document.getElementById('start-button')?.textContent).toBe('Start journey');
 
@@ -71,12 +63,5 @@ describe('app bootstrap smoke test', () => {
     expect(document.getElementById('start-screen')?.classList.contains('hidden')).toBe(true);
     expect(document.getElementById('game-shell')?.classList.contains('hidden')).toBe(false);
     expect(setLanguageMock).toHaveBeenCalledWith('tl');
-    expect(logInfoMock).toHaveBeenCalledWith(
-      'Journey started',
-      expect.objectContaining({
-        eventName: 'journey_started',
-        language: 'tl'
-      })
-    );
   });
 });

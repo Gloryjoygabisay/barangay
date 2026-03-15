@@ -10,10 +10,6 @@ export default defineConfig({
           if (id.includes('/node_modules/phaser/')) {
             return 'phaser';
           }
-
-          if (id.includes('/node_modules/@newrelic/')) {
-            return 'newrelic';
-          }
         }
       }
     }

@@ -15,7 +15,7 @@
 The app has a split bootstrap flow across `index.html`, `src/main.ts`, `src/game-loader.ts`, and `src/game.ts`.
 
 - `index.html` contains the full DOM shell for the start screen, About panel, in-game HUD, stats, and dialogue panel.
-- `src/main.ts` owns all non-Phaser UI state: selected language, start/about interactions, version labels, telemetry initialization, and the transition from the start screen into gameplay.
+- `src/main.ts` owns all non-Phaser UI state: selected language, start/about interactions, version labels, and the transition from the start screen into gameplay.
 - `src/game-loader.ts` exists only to lazy-load the Phaser module. `main.ts` deliberately imports the game through this loader so the Phaser bundle is not downloaded until the player starts the journey.
 - `src/game.ts` owns the actual game runtime. It creates a single `VillageScene`, loads the tilemap and SVG assets, handles movement, tracks encounter progress, updates journey stats, and syncs localized text back into the DOM.
 
@@ -31,10 +31,10 @@ Localization is also split intentionally.
 - `src/data/encounters.ts` holds the narrative text for locations, titles, bodies, choices, and results.
 - `src/main.ts` and `src/game.ts` both react to language changes. `main.ts` updates the outer DOM shell and forwards the current language to the game through `GameController.setLanguage`.
 
-Telemetry and deployment are wired for static hosting.
+Deployment is wired for static hosting.
 
-- `src/telemetry.ts` enables New Relic only when the required `VITE_NEW_RELIC_*` values are present. Missing values are treated as "telemetry off", not as an error.
-- `vite.config.ts` uses `base: './'` and manual chunking for Phaser and New Relic, so keep asset references and routing compatible with static hosting.
+- `index.html` contains the New Relic browser snippet directly in the page `<head>`. Do not reintroduce a second app-managed browser agent unless the monitoring approach changes intentionally.
+- `vite.config.ts` uses `base: './'` and manual chunking for Phaser, so keep asset references and routing compatible with static hosting.
 - `.github/workflows/deploy.yml` computes `VITE_APP_VERSION` during GitHub Pages builds; `src/main.ts` shows that version in the UI and falls back to `package.json` locally.
 
 ## Key conventions

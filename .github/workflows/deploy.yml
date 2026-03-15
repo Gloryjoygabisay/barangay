@@ -37,14 +37,6 @@ jobs:
         run: echo "VITE_APP_VERSION=$(node -p "require('./package.json').version + '+run.' + process.env.GITHUB_RUN_NUMBER")" >> "$GITHUB_ENV"
 
       - name: Build
-        env:
-          VITE_NEW_RELIC_APPLICATION_ID: ${{ vars.NEW_RELIC_APPLICATION_ID }}
-          VITE_NEW_RELIC_LICENSE_KEY: ${{ vars.NEW_RELIC_LICENSE_KEY }}
-          VITE_NEW_RELIC_AGENT_ID: ${{ vars.NEW_RELIC_AGENT_ID }}
-          VITE_NEW_RELIC_ACCOUNT_ID: ${{ vars.NEW_RELIC_ACCOUNT_ID }}
-          VITE_NEW_RELIC_TRUST_KEY: ${{ vars.NEW_RELIC_TRUST_KEY }}
-          VITE_NEW_RELIC_BEACON: ${{ vars.NEW_RELIC_BEACON }}
-          VITE_NEW_RELIC_ERROR_BEACON: ${{ vars.NEW_RELIC_ERROR_BEACON }}
         run: npm run build
 
       - name: Upload artifact

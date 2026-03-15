@@ -12,7 +12,6 @@ The app is designed for static hosting and currently deploys to GitHub Pages.
 - A hand-drawn village map with three encounter hotspots: `bridge`, `market`, and `ridge`
 - Dialogue choices that update journey stats and mark completed hotspots in the world
 - Mobile-friendly touch controls plus keyboard arrow-key movement
-- Optional New Relic browser telemetry when the required `VITE_NEW_RELIC_*` variables are set
 
 ## Quick start
 
@@ -47,7 +46,6 @@ src/
   game.ts                  Phaser scene, movement, encounters, and UI sync
   main.ts                  DOM wiring, start screen, about panel, and boot flow
   styles.css               Layout and mobile-first styling
-  telemetry.ts             New Relic browser telemetry helpers
 tests/
   app.smoke.test.ts        App shell and startup wiring smoke test
   build.smoke.test.ts      Production build smoke test
@@ -55,7 +53,7 @@ tests/
 
 ## How it works
 
-`src/main.ts` owns the HTML shell outside Phaser. It sets language, shows the start screen, opens and closes the About panel, initializes telemetry, and loads the Phaser game only after the player starts the journey.
+`src/main.ts` owns the HTML shell outside Phaser. It sets language, shows the start screen, opens and closes the About panel, and loads the Phaser game only after the player starts the journey.
 
 `src/game.ts` contains the Phaser scene. It loads the village tilemap and SVG assets, spawns the player at the `spawn` point from the map, renders hotspot markers, handles keyboard and touch movement, and opens encounter dialogue when the player reaches a hotspot.
 
@@ -111,20 +109,6 @@ The GitHub Pages workflow lives at `.github/workflows/deploy.yml`. On pushes to 
 4. uploads `dist/`
 5. deploys the site with GitHub Pages
 
-## New Relic browser telemetry
+## New Relic monitoring
 
-Telemetry is optional. If `VITE_NEW_RELIC_APPLICATION_ID` and `VITE_NEW_RELIC_LICENSE_KEY` are missing, the app runs with telemetry disabled.
-
-Start from `.env.example`:
-
-```bash
-VITE_NEW_RELIC_APPLICATION_ID=
-VITE_NEW_RELIC_LICENSE_KEY=
-VITE_NEW_RELIC_AGENT_ID=
-VITE_NEW_RELIC_ACCOUNT_ID=
-VITE_NEW_RELIC_TRUST_KEY=
-VITE_NEW_RELIC_BEACON=bam.nr-data.net
-VITE_NEW_RELIC_ERROR_BEACON=bam.nr-data.net
-```
-
-Use the Browser app Copy/Paste JavaScript settings from New Relic to populate these values.
+Browser monitoring is now loaded from the static New Relic snippet in `index.html`. If you need to change monitoring behavior, update that snippet directly instead of adding a separate app-managed browser agent.
