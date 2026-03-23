@@ -24,7 +24,11 @@ const MAP_HEIGHT = 352;
 const HOTSPOT_TEXTURES: Record<string, string> = {
   bridge: 'marker-bridge',
   market: 'marker-market',
-  ridge: 'marker-ridge'
+  ridge: 'marker-ridge',
+  'sari-sari': 'marker-sari-sari',
+  'barangay-hall': 'marker-barangay-hall',
+  'basketball-court': 'marker-basketball-court',
+  'market-stall': 'marker-market-stall'
 };
 const ENCOUNTER_TRIGGER_RADIUS = 28;
 const ENCOUNTER_RESET_RADIUS = 40;
@@ -39,6 +43,7 @@ class VillageScene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private language: Language = 'en';
   private stats: GameStats = { ...STARTING_STATS };
+  private score = 0;
   private activeEncounterId: string | null = null;
   private dismissedEncounterId: string | null = null;
   private completed = new Set<string>();
@@ -66,6 +71,10 @@ class VillageScene extends Phaser.Scene {
     this.load.image('marker-bridge', 'assets/sprites/marker-bridge.svg');
     this.load.image('marker-market', 'assets/sprites/marker-market.svg');
     this.load.image('marker-ridge', 'assets/sprites/marker-ridge.svg');
+    this.load.image('marker-sari-sari', 'assets/sprites/marker-sari-sari.svg');
+    this.load.image('marker-barangay-hall', 'assets/sprites/marker-barangay-hall.svg');
+    this.load.image('marker-basketball-court', 'assets/sprites/marker-basketball-court.svg');
+    this.load.image('marker-market-stall', 'assets/sprites/marker-market-stall.svg');
   }
 
   create(): void {
@@ -353,10 +362,21 @@ class VillageScene extends Phaser.Scene {
           Object.entries(choice.effects).forEach(([key, value]) => {
             this.stats[key as StatKey] += value ?? 0;
           });
+          if (encounter.isQuiz) {
+            const isCorrect = choice.isCorrect === true;
+            if (isCorrect) {
+              this.score += encounter.points ?? 10;
+            }
+            const quizLabel = isCorrect
+              ? t('quizCorrect', this.language)
+              : t('quizWrong', this.language);
+            body.textContent = `${quizLabel} ${t('resultPrefix', this.language)}: ${localizeText(choice.result, this.language)}`;
+          } else {
+            body.textContent = `${t('resultPrefix', this.language)}: ${localizeText(choice.result, this.language)}`;
+          }
           this.completed.add(encounter.id);
           this.resolvedChoices.set(encounter.id, choice.id);
           this.refreshStatsUi();
-          body.textContent = `${t('resultPrefix', this.language)}: ${localizeText(choice.result, this.language)}`;
           choiceList.replaceChildren();
           this.markHotspotCompleted(encounter.hotspotId);
         });
@@ -456,6 +476,7 @@ class VillageScene extends Phaser.Scene {
     this.setText('trust-label', t('trust', this.language));
     this.setText('courage-label', t('courage', this.language));
     this.setText('supplies-label', t('supplies', this.language));
+    this.setText('score-label', t('score', this.language));
     this.setText('instructions-heading', t('instructionsHeading', this.language));
     this.setText('instructions-body', t('instructionsBody', this.language));
     this.setText('close-dialogue', t('close', this.language));
@@ -465,6 +486,7 @@ class VillageScene extends Phaser.Scene {
     this.setText('trust-value', String(this.stats.trust));
     this.setText('courage-value', String(this.stats.courage));
     this.setText('supplies-value', String(this.stats.supplies));
+    this.setText('score-value', String(this.score));
   }
 
   private setText(id: string, value: string): void {
