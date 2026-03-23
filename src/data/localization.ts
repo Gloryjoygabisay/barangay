@@ -26,6 +26,9 @@ export type UiTextKey =
   | 'trust'
   | 'courage'
   | 'supplies'
+  | 'score'
+  | 'quizCorrect'
+  | 'quizWrong'
   | 'instructionsHeading'
   | 'instructionsBody'
   | 'close'
@@ -125,6 +128,18 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   supplies: {
     en: 'Supplies',
     tl: 'Baon'
+  },
+  score: {
+    en: 'Score',
+    tl: 'Puntos'
+  },
+  quizCorrect: {
+    en: '✓ Correct!',
+    tl: '✓ Tama!'
+  },
+  quizWrong: {
+    en: '✗ Wrong answer.',
+    tl: '✗ Maling sagot.'
   },
   instructionsHeading: {
     en: 'How to Play',
