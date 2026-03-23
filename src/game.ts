@@ -20,6 +20,11 @@ const STARTING_STATS: GameStats = {
 
 const MAP_WIDTH = 640;
 const MAP_HEIGHT = 352;
+const TILE_SIZE = 32;
+
+// Ground-layer tile IDs that represent impassable walls or building borders.
+// Tile 4 = wall/border of the market building; tile 9 = pillar/wall variant.
+const BLOCKED_TILES = new Set([4, 9]);
 
 const HOTSPOT_TEXTURES: Record<string, string> = {
   bridge: 'marker-bridge',
@@ -106,8 +111,18 @@ class VillageScene extends Phaser.Scene {
       dy += speed;
     }
 
-    this.player.x = Phaser.Math.Clamp(this.player.x + dx, 24, MAP_WIDTH - 24);
-    this.player.y = Phaser.Math.Clamp(this.player.y + dy, 28, MAP_HEIGHT - 12);
+    const nextX = Phaser.Math.Clamp(this.player.x + dx, 24, MAP_WIDTH - 24);
+    const nextY = Phaser.Math.Clamp(this.player.y + dy, 28, MAP_HEIGHT - 12);
+
+    // Tile collision: try diagonal move first, then slide along each axis.
+    if (this.isTileWalkable(nextX, nextY)) {
+      this.player.x = nextX;
+      this.player.y = nextY;
+    } else if (this.isTileWalkable(nextX, this.player.y)) {
+      this.player.x = nextX;
+    } else if (this.isTileWalkable(this.player.x, nextY)) {
+      this.player.y = nextY;
+    }
 
     this.updatePlayerSprite(dx, dy);
 
@@ -446,6 +461,16 @@ class VillageScene extends Phaser.Scene {
       this.playerSprite.y = 0;
       this.playerShadow.scaleX = 1;
     }
+  }
+
+  private isTileWalkable(worldX: number, worldY: number): boolean {
+    const tileX = Math.floor(worldX / TILE_SIZE);
+    const tileY = Math.floor(worldY / TILE_SIZE);
+    if (tileX < 0 || tileY < 0 || tileX >= this.map.width || tileY >= this.map.height) {
+      return false;
+    }
+    const tile = this.map.getTileAt(tileX, tileY, false, 'Ground');
+    return tile === null || !BLOCKED_TILES.has(tile.index);
   }
 
   private refreshStaticUi(): void {
