@@ -49,6 +49,8 @@ class VillageScene extends Phaser.Scene {
   private spawnPoint = { x: 80, y: 304 };
   private facing: Facing = 'down';
   private walkFrame = 0;
+  private quizScore = 0;
+  private pendingQuizEncounterId: string | null = null;
 
   constructor() {
     super('village');
@@ -123,6 +125,12 @@ class VillageScene extends Phaser.Scene {
     const active = this.getActiveEncounter();
     if (active) {
       this.showEncounter(active);
+    }
+
+    const quizPanel = document.getElementById('quiz-panel');
+    if (quizPanel && !quizPanel.classList.contains('hidden')) {
+      this.setText('quiz-heading', t('quizHeading', language));
+      this.setText('quiz-prompt', t('quizPrompt', language));
     }
   }
 
@@ -243,6 +251,9 @@ class VillageScene extends Phaser.Scene {
   private hookUi(): void {
     const closeButton = document.getElementById('close-dialogue');
     closeButton?.addEventListener('click', () => this.closeDialogue());
+
+    const closeQuizButton = document.getElementById('close-quiz');
+    closeQuizButton?.addEventListener('click', () => this.closeQuiz());
   }
 
   private handleResize(): void {
@@ -359,6 +370,9 @@ class VillageScene extends Phaser.Scene {
           body.textContent = `${t('resultPrefix', this.language)}: ${localizeText(choice.result, this.language)}`;
           choiceList.replaceChildren();
           this.markHotspotCompleted(encounter.hotspotId);
+          if (encounter.quiz) {
+            this.pendingQuizEncounterId = encounter.id;
+          }
         });
         choiceList.appendChild(button);
       });
@@ -386,6 +400,107 @@ class VillageScene extends Phaser.Scene {
     if (closeButton) {
       closeButton.textContent = t('close', this.language);
     }
+
+    if (this.pendingQuizEncounterId) {
+      const quizEncounter = encounters.find((e) => e.id === this.pendingQuizEncounterId);
+      this.pendingQuizEncounterId = null;
+      if (quizEncounter?.quiz) {
+        this.showQuiz(quizEncounter);
+      }
+    }
+  }
+
+  private showQuiz(encounter: Encounter): void {
+    if (!encounter.quiz) {
+      return;
+    }
+
+    const panel = document.getElementById('quiz-panel');
+    const heading = document.getElementById('quiz-heading');
+    const prompt = document.getElementById('quiz-prompt');
+    const questionEl = document.getElementById('quiz-question');
+    const choiceList = document.getElementById('quiz-choice-list');
+    const feedback = document.getElementById('quiz-feedback');
+    const explanation = document.getElementById('quiz-explanation');
+    const closeBtn = document.getElementById('close-quiz');
+
+    if (!panel || !heading || !prompt || !questionEl || !choiceList || !feedback || !explanation || !closeBtn) {
+      return;
+    }
+
+    this.isDialogueOpen = true;
+    panel.classList.remove('hidden');
+
+    heading.textContent = t('quizHeading', this.language);
+    prompt.textContent = t('quizPrompt', this.language);
+    questionEl.textContent = localizeText(encounter.quiz.question, this.language);
+
+    feedback.textContent = '';
+    feedback.className = 'quiz-feedback hidden';
+    explanation.textContent = '';
+    explanation.classList.add('hidden');
+    closeBtn.textContent = t('quizSkip', this.language);
+    choiceList.replaceChildren();
+
+    encounter.quiz.choices.forEach((choice) => {
+      const button = document.createElement('button');
+      button.className = 'choice-button';
+      button.textContent = localizeText(choice.text, this.language);
+      button.addEventListener('click', () => {
+        choiceList.querySelectorAll('button').forEach((btn) => {
+          (btn as HTMLButtonElement).disabled = true;
+        });
+
+        if (choice.isCorrect) {
+          button.classList.add('quiz-choice-correct');
+          feedback.textContent = t('quizCorrect', this.language);
+          feedback.className = 'quiz-feedback correct';
+          this.quizScore += 1;
+          this.refreshStatsUi();
+
+          Object.entries(encounter.quiz!.bonusEffects).forEach(([key, value]) => {
+            this.stats[key as StatKey] += value ?? 0;
+          });
+          this.refreshStatsUi();
+
+          const bonusEntries = Object.entries(encounter.quiz!.bonusEffects)
+            .filter(([, v]) => v)
+            .map(([k, v]) => `${t(k as 'trust' | 'courage' | 'supplies', this.language)} +${v}`)
+            .join(', ');
+          if (bonusEntries) {
+            feedback.textContent += ` ${t('quizBonus', this.language)} ${bonusEntries}`;
+          }
+        } else {
+          button.classList.add('quiz-choice-wrong');
+          feedback.textContent = t('quizWrong', this.language);
+          feedback.className = 'quiz-feedback wrong';
+          choiceList.querySelectorAll('button').forEach((btn) => {
+            const choiceData = encounter.quiz!.choices.find(
+              (c) => localizeText(c.text, this.language) === btn.textContent
+            );
+            if (choiceData?.isCorrect) {
+              btn.classList.add('quiz-choice-correct');
+            }
+          });
+        }
+
+        feedback.classList.remove('hidden');
+        explanation.textContent = localizeText(encounter.quiz!.explanation, this.language);
+        explanation.classList.remove('hidden');
+        closeBtn.textContent = t('close', this.language);
+      });
+      choiceList.appendChild(button);
+    });
+  }
+
+  private closeQuiz(): void {
+    const panel = document.getElementById('quiz-panel');
+    if (!panel) {
+      return;
+    }
+
+    panel.classList.add('hidden');
+    this.isDialogueOpen = false;
   }
 
   private markHotspotCompleted(hotspotId: string): void {
@@ -456,6 +571,7 @@ class VillageScene extends Phaser.Scene {
     this.setText('trust-label', t('trust', this.language));
     this.setText('courage-label', t('courage', this.language));
     this.setText('supplies-label', t('supplies', this.language));
+    this.setText('quiz-score-label', t('quizScore', this.language));
     this.setText('instructions-heading', t('instructionsHeading', this.language));
     this.setText('instructions-body', t('instructionsBody', this.language));
     this.setText('close-dialogue', t('close', this.language));
@@ -465,6 +581,7 @@ class VillageScene extends Phaser.Scene {
     this.setText('trust-value', String(this.stats.trust));
     this.setText('courage-value', String(this.stats.courage));
     this.setText('supplies-value', String(this.stats.supplies));
+    this.setText('quiz-score-value', String(this.quizScore));
   }
 
   private setText(id: string, value: string): void {
