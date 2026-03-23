@@ -333,7 +333,9 @@ class VillageScene extends Phaser.Scene {
 
     this.isDialogueOpen = true;
     panel.classList.remove('hidden');
-    location.textContent = localizeText(encounter.location, this.language);
+    const locationText = localizeText(encounter.location, this.language);
+    location.textContent = locationText;
+    this.showArrivalToast(locationText);
     title.textContent = localizeText(encounter.title, this.language);
 
     choiceList.replaceChildren();
@@ -370,6 +372,26 @@ class VillageScene extends Phaser.Scene {
         ? t('completed', this.language)
         : t('close', this.language);
     }
+  }
+
+  private showArrivalToast(locationText: string): void {
+    const toast = document.getElementById('arrival-toast');
+    if (!toast) {
+      return;
+    }
+
+    toast.textContent = `📍 ${t('arrivedAt', this.language)} ${locationText}`;
+    toast.classList.remove('hidden', 'toast-visible');
+    // Force a reflow so the CSS transition fires from the start state
+    void (toast as HTMLElement).offsetWidth;
+    toast.classList.add('toast-visible');
+
+    this.time.delayedCall(2500, () => {
+      toast.classList.remove('toast-visible');
+      this.time.delayedCall(300, () => {
+        toast.classList.add('hidden');
+      });
+    });
   }
 
   private closeDialogue(): void {
