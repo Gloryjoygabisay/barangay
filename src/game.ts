@@ -28,11 +28,14 @@ const HOTSPOT_TEXTURES: Record<string, string> = {
 };
 const ENCOUNTER_TRIGGER_RADIUS = 28;
 const ENCOUNTER_RESET_RADIUS = 40;
+const PLAYER_HALF_WIDTH = 10;
+const PLAYER_FOOT_OFFSET = 10;
 
 type Facing = 'down' | 'up' | 'side';
 
 class VillageScene extends Phaser.Scene {
   private map!: Phaser.Tilemaps.Tilemap;
+  private wallsLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private player!: Phaser.GameObjects.Container;
   private playerSprite!: Phaser.GameObjects.Image;
   private playerShadow!: Phaser.GameObjects.Ellipse;
@@ -106,8 +109,23 @@ class VillageScene extends Phaser.Scene {
       dy += speed;
     }
 
-    this.player.x = Phaser.Math.Clamp(this.player.x + dx, 24, MAP_WIDTH - 24);
-    this.player.y = Phaser.Math.Clamp(this.player.y + dy, 28, MAP_HEIGHT - 12);
+    const nextX = Phaser.Math.Clamp(this.player.x + dx, 24, MAP_WIDTH - 24);
+    const nextY = Phaser.Math.Clamp(this.player.y + dy, 28, MAP_HEIGHT - 12);
+
+    if (this.wallsLayer) {
+      const blockedX =
+        this.isSolidWall(nextX - PLAYER_HALF_WIDTH, this.player.y + PLAYER_FOOT_OFFSET) ||
+        this.isSolidWall(nextX + PLAYER_HALF_WIDTH, this.player.y + PLAYER_FOOT_OFFSET);
+      const blockedY =
+        this.isSolidWall(this.player.x - PLAYER_HALF_WIDTH, nextY + PLAYER_FOOT_OFFSET) ||
+        this.isSolidWall(this.player.x + PLAYER_HALF_WIDTH, nextY + PLAYER_FOOT_OFFSET);
+
+      this.player.x = blockedX ? this.player.x : nextX;
+      this.player.y = blockedY ? this.player.y : nextY;
+    } else {
+      this.player.x = nextX;
+      this.player.y = nextY;
+    }
 
     this.updatePlayerSprite(dx, dy);
 
@@ -136,6 +154,7 @@ class VillageScene extends Phaser.Scene {
 
     this.map.createLayer('Ground', tileset, 0, 0)?.setDepth(0);
     this.map.createLayer('Decor', tileset, 0, 0)?.setDepth(1);
+    this.wallsLayer = this.map.createLayer('Walls', tileset, 0, 0)?.setDepth(2) ?? null;
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
   }
 
@@ -172,7 +191,8 @@ class VillageScene extends Phaser.Scene {
         .text(point.x - 48, point.y + 8, localizeText(encounter.location, this.language), titleStyle)
         .setDepth(3)
         .setWordWrapWidth(96)
-        .setAlign('center');
+        .setAlign('center')
+        .setVisible(false);
 
       return [
         {
@@ -400,6 +420,11 @@ class VillageScene extends Phaser.Scene {
     if (closeButton) {
       closeButton.textContent = t('completed', this.language);
     }
+  }
+
+  private isSolidWall(px: number, py: number): boolean {
+    const tile = this.wallsLayer?.getTileAtWorldXY(px, py) ?? null;
+    return tile !== null && tile.index > 0;
   }
 
   private refreshHotspotLabels(): void {
