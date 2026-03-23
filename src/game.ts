@@ -10,6 +10,7 @@ type Hotspot = {
   y: number;
   sprite: Phaser.GameObjects.Image;
   label: Phaser.GameObjects.Text;
+  glow: Phaser.GameObjects.Arc;
 };
 
 const STARTING_STATS: GameStats = {
@@ -137,6 +138,7 @@ class VillageScene extends Phaser.Scene {
     this.map.createLayer('Ground', tileset, 0, 0)?.setDepth(0);
     this.map.createLayer('Decor', tileset, 0, 0)?.setDepth(1);
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+    this.cameras.main.setRoundPixels(true);
   }
 
   private createHotspots(): void {
@@ -174,13 +176,25 @@ class VillageScene extends Phaser.Scene {
         .setWordWrapWidth(96)
         .setAlign('center');
 
+      const glow = this.add.circle(point.x, point.y - 20, 22, 0xffe066, 0.35).setDepth(2);
+      this.tweens.add({
+        targets: glow,
+        scaleX: { from: 0.8, to: 1.5 },
+        scaleY: { from: 0.8, to: 1.5 },
+        alpha: { from: 0.35, to: 0 },
+        duration: 1200,
+        repeat: -1,
+        ease: 'Sine.easeOut'
+      });
+
       return [
         {
           id: encounter.hotspotId,
           x: point.x,
           y: point.y,
           sprite,
-          label
+          label,
+          glow
         }
       ];
     });
@@ -259,6 +273,7 @@ class VillageScene extends Phaser.Scene {
     this.hotspots.forEach((hotspot) => {
       hotspot.sprite.setDisplaySize(isMobile ? 52 : 36, isMobile ? 52 : 36);
       hotspot.sprite.setPosition(hotspot.x, hotspot.y - (isMobile ? 28 : 20));
+      hotspot.glow.setPosition(hotspot.x, hotspot.y - (isMobile ? 28 : 20));
       hotspot.label
         .setFontSize(isMobile ? '16px' : '13px')
         .setWordWrapWidth(isMobile ? 128 : 96)
@@ -396,6 +411,8 @@ class VillageScene extends Phaser.Scene {
 
     hotspot.sprite.setTint(0x7a7a7a).setAlpha(0.75);
     hotspot.label.setColor('#586155');
+    this.tweens.killTweensOf(hotspot.glow);
+    hotspot.glow.setVisible(false);
     const closeButton = document.getElementById('close-dialogue');
     if (closeButton) {
       closeButton.textContent = t('completed', this.language);
@@ -494,6 +511,9 @@ export function createGame(initialLanguage: Language): GameController {
     height: MAP_HEIGHT,
     parent: 'game-root',
     backgroundColor: '#254336',
+    render: {
+      roundPixels: true
+    },
     scale: {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH
