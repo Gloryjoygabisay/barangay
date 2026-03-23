@@ -31,7 +31,8 @@ export type UiTextKey =
   | 'close'
   | 'completed'
   | 'resultPrefix'
-  | 'encounterPrompt';
+  | 'encounterPrompt'
+  | 'arrivedAt';
 
 export const uiText: Record<UiTextKey, LocalizedText> = {
   startEyebrow: {
@@ -149,6 +150,10 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   encounterPrompt: {
     en: 'Choose your response:',
     tl: 'Piliin ang iyong tugon:'
+  },
+  arrivedAt: {
+    en: 'You arrived at',
+    tl: 'Nakarating ka sa'
   }
 };
 
