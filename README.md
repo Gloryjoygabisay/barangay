@@ -1,6 +1,10 @@
 # Trail Through the Barangay
 
-`rogame` is a small static web game built with Vite, TypeScript, and Phaser 3. It presents a mobile-friendly narrative exploration demo where a young traveler walks through a mountain village, discovers encounter hotspots, and makes choices that affect `trust`, `courage`, and `supplies`.
+[![Deploy to GitHub Pages](https://github.com/Gloryjoygabisay/barangay/actions/workflows/deploy.yml/badge.svg)](https://github.com/Gloryjoygabisay/barangay/actions/workflows/deploy.yml)
+
+[Barangay game](https://gloryjoygabisay.github.io/barangay/)
+
+`Barangay` is a small static web game built with Vite, TypeScript, and Phaser 3. It presents a mobile-friendly narrative exploration demo where a young traveler walks through a mountain village, discovers encounter hotspots, and makes choices that affect `trust`, `courage`, and `supplies`.
 
 The app is designed for static hosting and currently deploys to GitHub Pages.
 
