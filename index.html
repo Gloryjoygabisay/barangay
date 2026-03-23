@@ -93,6 +93,10 @@
                 <span id="supplies-label"></span>
                 <strong id="supplies-value"></strong>
               </div>
+              <div class="stats-quiz-score">
+                <span id="quiz-score-label"></span>
+                <strong id="quiz-score-value">0</strong>
+              </div>
             </div>
           </section>
           <section class="instructions-card">
@@ -107,6 +111,17 @@
             <p id="dialogue-body"></p>
             <div id="choice-list" class="choice-list"></div>
             <button id="close-dialogue" class="secondary-button"></button>
+          </div>
+        </section>
+        <section id="quiz-panel" class="quiz-panel hidden" aria-live="polite">
+          <div class="dialogue-card quiz-card">
+            <p class="dialogue-location quiz-heading" id="quiz-heading"></p>
+            <p id="quiz-prompt"></p>
+            <p id="quiz-question" class="quiz-question"></p>
+            <div id="quiz-choice-list" class="choice-list"></div>
+            <p id="quiz-feedback" class="quiz-feedback hidden"></p>
+            <p id="quiz-explanation" class="quiz-explanation hidden"></p>
+            <button id="close-quiz" class="secondary-button compact-button"></button>
           </div>
         </section>
       </div>

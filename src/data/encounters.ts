@@ -9,6 +9,19 @@ export type EncounterChoice = {
   effects: Partial<Record<StatKey, number>>;
 };
 
+export type QuizChoice = {
+  id: string;
+  text: LocalizedText;
+  isCorrect: boolean;
+};
+
+export type QuizQuestion = {
+  question: LocalizedText;
+  choices: QuizChoice[];
+  explanation: LocalizedText;
+  bonusEffects: Partial<Record<StatKey, number>>;
+};
+
 export type Encounter = {
   id: string;
   hotspotId: string;
@@ -16,6 +29,7 @@ export type Encounter = {
   title: LocalizedText;
   body: LocalizedText;
   choices: EncounterChoice[];
+  quiz?: QuizQuestion;
 };
 
 export const encounters: Encounter[] = [
@@ -59,7 +73,35 @@ export const encounters: Encounter[] = [
         },
         effects: { trust: 1, supplies: -1, courage: 1 }
       }
-    ]
+    ],
+    quiz: {
+      question: {
+        en: 'The spirit of "Bayanihan" is a core Filipino value. What does Bayanihan mean?',
+        tl: 'Ang "Bayanihan" ay isang mahalagang pagpapahalaga ng mga Pilipino. Ano ang ibig sabihin nito?'
+      },
+      choices: [
+        {
+          id: 'bayanihan-unity',
+          text: { en: 'Community unity and cooperative effort to help one another', tl: 'Pagkakaisa ng komunidad at tulong sa isa\'t isa' },
+          isCorrect: true
+        },
+        {
+          id: 'bayanihan-festival',
+          text: { en: 'A traditional harvest festival', tl: 'Isang tradisyonal na pagdiriwang ng ani' },
+          isCorrect: false
+        },
+        {
+          id: 'bayanihan-hero',
+          text: { en: 'The story of a village hero', tl: 'Kwento ng isang bayani ng baryo' },
+          isCorrect: false
+        }
+      ],
+      explanation: {
+        en: 'Bayanihan is the Filipino spirit of communal unity and cooperation — helping each other as a community, not just as individuals.',
+        tl: 'Ang Bayanihan ay ang diwa ng pagkakaisa at pagtutulungan ng mga Pilipino — ang pagtutulungan bilang isang komunidad, hindi bilang mga indibidwal lamang.'
+      },
+      bonusEffects: { trust: 2 }
+    }
   },
   {
     id: 'market-musicians',
@@ -101,7 +143,35 @@ export const encounters: Encounter[] = [
         },
         effects: { supplies: -1, trust: 2 }
       }
-    ]
+    ],
+    quiz: {
+      question: {
+        en: 'Which traditional Filipino stringed instrument is commonly played at village festivities in the Cordillera and Visayas regions?',
+        tl: 'Aling tradisyonal na Pilipinong instrumento ang karaniwang tumutugtog sa mga pagdiriwang ng baryo sa Cordillera at Visayas?'
+      },
+      choices: [
+        {
+          id: 'kudyapi',
+          text: { en: 'Kudyapi (boat lute)', tl: 'Kudyapi (lute na hugis bangka)' },
+          isCorrect: true
+        },
+        {
+          id: 'guitar',
+          text: { en: 'Classical guitar', tl: 'Klasikal na gitara' },
+          isCorrect: false
+        },
+        {
+          id: 'violin',
+          text: { en: 'Violin', tl: 'Violin' },
+          isCorrect: false
+        }
+      ],
+      explanation: {
+        en: 'The Kudyapi is a two-stringed Philippine lute carved from a single piece of wood. It is one of the oldest indigenous instruments in the Philippines.',
+        tl: 'Ang Kudyapi ay isang dalawang-kuwerdas na luteng Pilipino na inukit mula sa isang piraso ng kahoy. Isa ito sa pinakamatandang katutubong instrumento sa Pilipinas.'
+      },
+      bonusEffects: { courage: 1, trust: 1 }
+    }
   },
   {
     id: 'ridge-storm',
@@ -143,7 +213,35 @@ export const encounters: Encounter[] = [
         },
         effects: { courage: 2, trust: 1 }
       }
-    ]
+    ],
+    quiz: {
+      question: {
+        en: 'The famous rice terraces of the Cordillera were carved into the mountains by the Ifugao people. How long ago are they estimated to have been built?',
+        tl: 'Ang mga tanyag na hagdang-hagdang palayan ng Cordillera ay inukit ng mga Ifugao. Gaano na katagal ang tinatayang pagtayo nito?'
+      },
+      choices: [
+        {
+          id: 'rice-100',
+          text: { en: 'About 100 years ago', tl: 'Mga 100 taon na ang nakalipas' },
+          isCorrect: false
+        },
+        {
+          id: 'rice-2000',
+          text: { en: 'About 2,000 years ago', tl: 'Mga 2,000 taon na ang nakalipas' },
+          isCorrect: true
+        },
+        {
+          id: 'rice-500',
+          text: { en: 'About 500 years ago', tl: 'Mga 500 taon na ang nakalipas' },
+          isCorrect: false
+        }
+      ],
+      explanation: {
+        en: 'The Ifugao Rice Terraces are estimated to be about 2,000 years old and are a UNESCO World Heritage Site.',
+        tl: 'Ang mga Hagdang-Palayan ng Ifugao ay tinatayang humigit 2,000 taong gulang na at isang UNESCO World Heritage Site.'
+      },
+      bonusEffects: { courage: 1, supplies: 1 }
+    }
   }
 ];
 

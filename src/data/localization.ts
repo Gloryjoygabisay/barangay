@@ -31,7 +31,14 @@ export type UiTextKey =
   | 'close'
   | 'completed'
   | 'resultPrefix'
-  | 'encounterPrompt';
+  | 'encounterPrompt'
+  | 'quizHeading'
+  | 'quizPrompt'
+  | 'quizCorrect'
+  | 'quizWrong'
+  | 'quizBonus'
+  | 'quizSkip'
+  | 'quizScore';
 
 export const uiText: Record<UiTextKey, LocalizedText> = {
   startEyebrow: {
@@ -149,6 +156,34 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   encounterPrompt: {
     en: 'Choose your response:',
     tl: 'Piliin ang iyong tugon:'
+  },
+  quizHeading: {
+    en: '🎓 Challenge Question',
+    tl: '🎓 Tanong sa Hamon'
+  },
+  quizPrompt: {
+    en: 'Test your knowledge for a bonus reward:',
+    tl: 'Subukan ang iyong kaalaman para sa dagdag na gantimpala:'
+  },
+  quizCorrect: {
+    en: '✅ Correct!',
+    tl: '✅ Tama!'
+  },
+  quizWrong: {
+    en: '❌ Not quite.',
+    tl: '❌ Hindi tama.'
+  },
+  quizBonus: {
+    en: 'Bonus earned:',
+    tl: 'Nakakuha ng bonus:'
+  },
+  quizSkip: {
+    en: 'Skip challenge',
+    tl: 'Laktawan ang hamon'
+  },
+  quizScore: {
+    en: 'Quiz Score',
+    tl: 'Puntos sa Hamon'
   }
 };
 
