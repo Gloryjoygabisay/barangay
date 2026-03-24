@@ -333,6 +333,7 @@ class VillageScene extends Phaser.Scene {
     const panel = document.getElementById('dialogue-panel');
     const locationEl = document.getElementById('dialogue-location');
     const progressEl = document.getElementById('question-progress');
+    const difficultyEl = document.getElementById('question-difficulty');
     const title = document.getElementById('dialogue-title');
     const body = document.getElementById('dialogue-body');
     const choiceList = document.getElementById('choice-list');
@@ -345,6 +346,11 @@ class VillageScene extends Phaser.Scene {
     this.isDialogueOpen = true;
     panel.classList.remove('hidden');
     locationEl.textContent = localizeText(encounter.location, this.language);
+
+    if (difficultyEl) {
+      difficultyEl.textContent = this.getDifficultyLabel(encounter.level);
+      difficultyEl.dataset.level = String(encounter.level);
+    }
 
     if (this.completed.has(encounter.id)) {
       if (progressEl) progressEl.textContent = '';
@@ -390,6 +396,7 @@ class VillageScene extends Phaser.Scene {
             this.questionProgressMap.delete(encounter.id);
             this.markHotspotCompleted(encounter.hotspotId);
             if (progressEl) progressEl.textContent = '';
+            if (difficultyEl) difficultyEl.textContent = '';
             title.textContent = t('checkpointCleared', this.language);
             body.textContent = t('checkpointBody', this.language);
             closeButton.textContent = t('completed', this.language);
@@ -414,6 +421,13 @@ class VillageScene extends Phaser.Scene {
       });
       choiceList.appendChild(button);
     });
+  }
+
+  private getDifficultyLabel(level: number): string {
+    if (level === 1) return t('levelEasy', this.language);
+    if (level === 2) return t('levelMedium', this.language);
+    if (level === 3) return t('levelHard', this.language);
+    return t('levelExpert', this.language);
   }
 
   private showGameOver(): void {

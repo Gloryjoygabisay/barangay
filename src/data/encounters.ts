@@ -36,20 +36,20 @@ export const encounters: Encounter[] = [
         id: 'bridge-q1',
         title: { en: 'The Number Pattern', tl: 'Ang Pattern ng Bilang' },
         body: {
-          en: 'A section of planks is marked: 2, 4, 6, ?, 10. Step on the correct plank to cross safely. What is the missing number?',
-          tl: 'Ang mga tabla ay may marka: 2, 4, 6, ?, 10. Tumuntong sa tamang tabla para makatawid nang ligtas. Ano ang nawawalang numero?'
+          en: 'A section of planks is marked with numbers: 2, 4, 8, ___. Step on the correct plank to cross safely. What comes next?',
+          tl: 'Ang mga tabla ay may marka: 2, 4, 8, ___. Tumuntong sa tamang tabla para makatawid nang ligtas. Ano ang susunod?'
         },
         choices: [
           {
             id: 'bridge-q1-correct',
-            text: { en: '8 — the pattern increases by 2 each time.', tl: '8 — ang pattern ay nagdaragdag ng 2 sa bawat pagkakataon.' },
+            text: { en: '16 — the pattern doubles each time.', tl: '16 — ang pattern ay nagdodoble sa bawat pagkakataon.' },
             result: { en: 'Correct! You step confidently onto the safe plank.', tl: 'Tama! Tiwala kang tumuntong sa ligtas na tabla.' },
             isCorrect: true,
             effects: { courage: 1 }
           },
           {
             id: 'bridge-q1-wrong',
-            text: { en: '7 — roughly midway between 6 and 10.', tl: '7 — halos nasa gitna ng 6 at 10.' },
+            text: { en: '10 — the pattern adds 2 each time.', tl: '10 — ang pattern ay nagdadagdag ng 2 sa bawat pagkakataon.' },
             result: { en: 'Wrong! The plank cracks and you fall into the river!', tl: 'Mali! Sumibak ang tabla at nahulog ka sa ilog!' },
             isCorrect: false,
             effects: { supplies: -1 }
@@ -60,8 +60,8 @@ export const encounters: Encounter[] = [
         id: 'bridge-q2',
         title: { en: 'The Weight Riddle', tl: 'Ang Palaisipan ng Bigat' },
         body: {
-          en: 'The bridge keeper asks: "Which is heavier — 1 kg of bamboo or 1 kg of stone?"',
-          tl: 'Tinanong ng tagabantay ng tulay: "Alin ang mas mabigat — 1 kg na kawayan o 1 kg na bato?"'
+          en: 'The bridge keeper asks: "Which is heavier — 1 kg of cotton or 1 kg of iron?"',
+          tl: 'Tinanong ng tagabantay ng tulay: "Alin ang mas mabigat — 1 kg na bulak o 1 kg na bakal?"'
         },
         choices: [
           {
@@ -73,7 +73,7 @@ export const encounters: Encounter[] = [
           },
           {
             id: 'bridge-q2-wrong',
-            text: { en: 'Stone is heavier — it is denser.', tl: 'Mas mabigat ang bato — mas siksik ito.' },
+            text: { en: 'Iron is heavier — it is denser.', tl: 'Mas mabigat ang bakal — mas siksik ito.' },
             result: { en: 'Wrong! The keeper shakes his head. You lose your footing!', tl: 'Mali! Umiling ang tagabantay. Natisod ka!' },
             isCorrect: false,
             effects: { supplies: -1 }
@@ -82,23 +82,23 @@ export const encounters: Encounter[] = [
       },
       {
         id: 'bridge-q3',
-        title: { en: 'The Banana Trick', tl: 'Ang Trick ng Saging' },
+        title: { en: 'The Apple Count', tl: 'Ang Bilang ng Mansanas' },
         body: {
-          en: 'You see 5 bananas on the bridge. You take away 3. How many bananas do YOU now have?',
-          tl: 'Nakakita ka ng 5 saging sa tulay. Kinuha mo ang 3. Ilan na saging ang MAYROON KA ngayon?'
+          en: 'You have 3 apples. You eat 1. How many apples do you have left?',
+          tl: 'Mayroon kang 3 mansanas. Kumain ka ng 1. Ilan na mansanas ang natitira sa iyo?'
         },
         choices: [
           {
             id: 'bridge-q3-correct',
-            text: { en: '3 — I took 3, so I have 3.', tl: '3 — kinuha ko ang 3, kaya mayroon akong 3.' },
+            text: { en: '2 — 3 minus 1 equals 2.', tl: '2 — 3 minus 1 ay katumbas ng 2.' },
             result: { en: 'Correct! You cross the first section of the bamboo bridge!', tl: 'Tama! Natawid mo ang unang bahagi ng tulayang kawayan!' },
             isCorrect: true,
             effects: { courage: 1, trust: 1 }
           },
           {
             id: 'bridge-q3-wrong',
-            text: { en: '2 — 5 minus 3 equals 2.', tl: '2 — 5 minus 3 ay katumbas ng 2.' },
-            result: { en: 'Wrong! The trick was about what YOU have, not what remains on the bridge!', tl: 'Mali! Ang trick ay tungkol sa kung ano ang MAYROON KA, hindi kung ano ang naiwan sa tulay!' },
+            text: { en: '3 — eating does not change the count.', tl: '3 — ang pagkain ay hindi nagbabago ng bilang.' },
+            result: { en: 'Wrong! Eating one apple means you have one fewer!', tl: 'Mali! Ang pagkain ng isang mansanas ay nangangahulugang isa kang kulang!' },
             isCorrect: false,
             effects: { supplies: -1 }
           }
