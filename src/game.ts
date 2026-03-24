@@ -22,9 +22,9 @@ const MAP_WIDTH = 640;
 const MAP_HEIGHT = 352;
 
 const HOTSPOT_TEXTURES: Record<string, string> = {
-  bridge: 'marker-bridge',
-  market: 'marker-market',
-  ridge: 'marker-ridge'
+  'bridge-1': 'marker-bridge',
+  'bridge-2': 'marker-bridge',
+  'bridge-3': 'marker-bridge'
 };
 const ENCOUNTER_TRIGGER_RADIUS = 28;
 const ENCOUNTER_RESET_RADIUS = 40;
@@ -186,7 +186,7 @@ class VillageScene extends Phaser.Scene {
 
     const riverBands = [
       { x: 64, y: 0,   w: 64,  h: 128 },  // cols 2-3, rows 0-3 (upper river)
-      { x: 96, y: 160, w: 160, h: 64  }   // cols 3-7, rows 5-6 (symmetric bridge river)
+      { x: 96, y: 128, w: 160, h: 128 }   // cols 3-7, rows 4-7 (full bridge river)
     ];
 
     riverBands.forEach(({ x, y, w, h }) => {
@@ -550,7 +550,7 @@ class VillageScene extends Phaser.Scene {
           this.time.delayedCall(GAME_OVER_DELAY_MS, () => {
             panel.classList.add('hidden');
             this.isDialogueOpen = false;
-            if (encounter.hotspotId === 'bridge') {
+            if (encounter.hotspotId.startsWith('bridge')) {
               this.fallIntoRiver(encounter);
             } else {
               this.showGameOver();
