@@ -546,12 +546,52 @@ class VillageScene extends Phaser.Scene {
           this.time.delayedCall(GAME_OVER_DELAY_MS, () => {
             panel.classList.add('hidden');
             this.isDialogueOpen = false;
-            this.showGameOver();
+            if (encounter.hotspotId === 'bridge') {
+              this.fallIntoRiver(encounter);
+            } else {
+              this.showGameOver();
+            }
           });
         }
       });
       choiceList.appendChild(button);
     });
+  }
+
+  // Bridge-specific wrong-answer consequence: player falls into the river,
+  // loses a few stats, and is teleported back to spawn to try again.
+  private fallIntoRiver(encounter: Encounter): void {
+    // Apply a small penalty but keep it survivable
+    this.stats.supplies = Math.max(0, this.stats.supplies - 2);
+    this.stats.courage  = Math.max(0, this.stats.courage  - 1);
+    this.refreshStatsUi();
+
+    // If supplies bottomed out, proper game over
+    if (this.stats.supplies <= 0) {
+      this.showGameOver();
+      return;
+    }
+
+    // Blue splash overlay on the game canvas
+    const gameRoot = document.getElementById('game-root');
+    if (gameRoot) {
+      const splash = document.createElement('div');
+      splash.className = 'river-fall-overlay';
+      gameRoot.appendChild(splash);
+      setTimeout(() => splash.remove(), 1100);
+    }
+
+    // Reset this bridge encounter so the player can retry
+    this.questionProgressMap.delete(encounter.id);
+    this.activeEncounterId = null;
+
+    // Teleport player back to spawn after the splash animation peaks
+    this.time.delayedCall(450, () => {
+      this.player.setPosition(this.spawnPoint.x, this.spawnPoint.y);
+    });
+
+    // Briefly show a retry banner (reuse the location-popup)
+    this.showLocationBanner(t('riverFallMessage', this.language));
   }
 
   private showGameOver(): void {

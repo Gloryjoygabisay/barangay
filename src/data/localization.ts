@@ -31,6 +31,7 @@ export type UiTextKey =
   | 'controlsHeading'
   | 'instructionsHeading'
   | 'instructionsBody'
+  | 'riverFallMessage'
   | 'close'
   | 'completed'
   | 'resultPrefix'
@@ -159,6 +160,10 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   close: {
     en: 'Continue crossing',
     tl: 'Magpatuloy sa pagtawid'
+  },
+  riverFallMessage: {
+    en: '💦 You fell in! Start again from the bank',
+    tl: '💦 Nahulog ka! Bumalik sa simula ng tulay'
   },
   completed: {
     en: 'Completed',
