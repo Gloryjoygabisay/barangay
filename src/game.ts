@@ -530,16 +530,20 @@ class VillageScene extends Phaser.Scene {
             if (progressEl) progressEl.textContent = '';
             title.textContent = t('checkpointCleared', this.language);
             body.textContent = t('checkpointBody', this.language);
-            closeButton.textContent = t('completed', this.language);
+            closeButton.textContent = t('nextLevel', this.language);
             closeButton.classList.remove('hidden');
           } else {
             this.questionProgressMap.set(encounter.id, nextIdx);
             body.textContent = localizeText(choice.result, this.language);
-            this.time.delayedCall(QUESTION_TRANSITION_DELAY_MS, () => {
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'next-level-btn';
+            nextBtn.textContent = t('nextQuestion', this.language);
+            nextBtn.addEventListener('click', () => {
               if (this.isDialogueOpen) {
                 this.showEncounter(encounter);
               }
-            });
+            }, { once: true });
+            choiceList.appendChild(nextBtn);
           }
         } else {
           body.textContent = localizeText(choice.result, this.language);

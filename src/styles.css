@@ -515,6 +515,34 @@ h2 {
   opacity: 0.92;
 }
 
+.next-level-btn {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border: 0;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #2a9d3f, #1a7a2e);
+  color: #f0fff4;
+  box-shadow: 0 0 0 0 rgba(42, 157, 63, 0.5);
+  animation: next-level-pulse 1.6s ease-in-out infinite;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+
+.next-level-btn:active {
+  transform: translateY(1px);
+  opacity: 0.88;
+}
+
+@keyframes next-level-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(42, 157, 63, 0.5); }
+  50%       { box-shadow: 0 0 0 8px rgba(42, 157, 63, 0); }
+}
+
 .about-panel {
   position: fixed;
   inset: 0;

@@ -46,7 +46,9 @@ export type UiTextKey =
   | 'finalScore'
   | 'playAgain'
   | 'trueFalse'
-  | 'multipleChoice';
+  | 'multipleChoice'
+  | 'nextQuestion'
+  | 'nextLevel';
 
 export const uiText: Record<UiTextKey, LocalizedText> = {
   startEyebrow: {
@@ -220,6 +222,14 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   multipleChoice: {
     en: '🔵 Multiple Choice',
     tl: '🔵 Maramihang Pagpipilian'
+  },
+  nextQuestion: {
+    en: 'Next Question ▶',
+    tl: 'Susunod na Tanong ▶'
+  },
+  nextLevel: {
+    en: 'Next Level →',
+    tl: 'Susunod na Antas →'
   }
 };
 
