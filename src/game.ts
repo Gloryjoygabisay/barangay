@@ -28,6 +28,8 @@ const HOTSPOT_TEXTURES: Record<string, string> = {
 };
 const ENCOUNTER_TRIGGER_RADIUS = 28;
 const ENCOUNTER_RESET_RADIUS = 40;
+const BRIDGE_APPROACH_RADIUS = 60;
+const BRIDGE_CHALLENGE_STEPS = 8;
 const QUESTION_TRANSITION_DELAY_MS = 1200;
 const GAME_OVER_DELAY_MS = 1500;
 const POINTS_PER_LEVEL = 10;
@@ -53,6 +55,7 @@ class VillageScene extends Phaser.Scene {
   private spawnPoint = { x: 80, y: 304 };
   private facing: Facing = 'down';
   private walkFrame = 0;
+  private stepCount = 0;
 
   constructor() {
     super('village');
@@ -113,7 +116,13 @@ class VillageScene extends Phaser.Scene {
     this.player.x = Phaser.Math.Clamp(this.player.x + dx, 24, MAP_WIDTH - 24);
     this.player.y = Phaser.Math.Clamp(this.player.y + dy, 28, MAP_HEIGHT - 12);
 
+    const prevWalkFrame = this.walkFrame;
     this.updatePlayerSprite(dx, dy);
+
+    // Count each walk-animation step (frame 0→1 transition while moving)
+    if (this.walkFrame === 1 && prevWalkFrame !== 1 && (dx !== 0 || dy !== 0)) {
+      this.stepCount++;
+    }
 
     this.checkEncounters();
   }
@@ -318,14 +327,29 @@ class VillageScene extends Phaser.Scene {
         return false;
       }
 
-      return (
-        Phaser.Math.Distance.Between(this.player.x, this.player.y, hotspot.x, hotspot.y) < ENCOUNTER_TRIGGER_RADIUS
-      );
+      const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, hotspot.x, hotspot.y);
+
+      // Bridge: step-based trigger — player must walk a few steps and be within
+      // the approach zone before the challenge appears.
+      if (entry.hotspotId === 'bridge') {
+        return dist < BRIDGE_APPROACH_RADIUS && this.stepCount >= BRIDGE_CHALLENGE_STEPS;
+      }
+
+      return dist < ENCOUNTER_TRIGGER_RADIUS;
     });
 
     if (encounter && this.activeEncounterId !== encounter.id) {
       this.activeEncounterId = encounter.id;
-      this.showEncounter(encounter);
+      if (encounter.hotspotId === 'bridge') {
+        // Briefly show a warning before the challenge dialogue opens
+        this.isDialogueOpen = true;
+        this.showBridgeWarning(() => {
+          this.isDialogueOpen = false;
+          this.showEncounter(encounter);
+        });
+      } else {
+        this.showEncounter(encounter);
+      }
     }
   }
 
@@ -413,6 +437,34 @@ class VillageScene extends Phaser.Scene {
         }
       });
       choiceList.appendChild(button);
+    });
+  }
+
+  private showBridgeWarning(onComplete: () => void): void {
+    const cam = this.cameras.main;
+    const warningText = this.add
+      .text(cam.width / 2, cam.height / 3, t('bridgeChallenge', this.language), {
+        fontFamily: 'Georgia, serif',
+        fontSize: '22px',
+        color: '#ffdd00',
+        stroke: '#2c1810',
+        strokeThickness: 4,
+        align: 'center'
+      })
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(10);
+
+    this.tweens.add({
+      targets: warningText,
+      alpha: 0,
+      duration: 500,
+      ease: 'Power1',
+      delay: 700,
+      onComplete: () => {
+        warningText.destroy();
+        onComplete();
+      }
     });
   }
 

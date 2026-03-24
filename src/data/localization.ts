@@ -32,6 +32,7 @@ export type UiTextKey =
   | 'close'
   | 'completed'
   | 'resultPrefix'
+  | 'bridgeChallenge'
   | 'encounterPrompt'
   | 'questionLabel'
   | 'ofLabel'
@@ -159,6 +160,10 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   resultPrefix: {
     en: 'Result',
     tl: 'Bunga'
+  },
+  bridgeChallenge: {
+    en: '⚠️ A challenge appears!',
+    tl: '⚠️ May hamon!'
   },
   encounterPrompt: {
     en: 'Answer the logic question:',
