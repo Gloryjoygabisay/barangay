@@ -176,17 +176,17 @@ class VillageScene extends Phaser.Scene {
     );
   }
 
-  // River tiles: cols 2-3 rows 0-3 (x=64-128, y=0-128) and cols 3-4 rows 3-6 (x=96-160, y=96-224).
-  // Waves animate at depth 0.5 — beneath the bridge decor (depth 1) but above the ground (depth 0).
-  // The transparent plank gaps in the bridge tile let these waves show through.
+  // River tiles: cols 2-3 rows 0-3 (x=64-128, y=0-128) and cols 3-5 rows 3-6 (x=96-192, y=96-224).
+  // Band 2 now includes col 5 — the new north-south bridge column — so animated water
+  // shows through the transparent plank gaps in bridge tile 7.
   private animateWater(): void {
     const g = this.waterGraphics;
     g.clear();
     const t = this.time.now / 900;
 
     const riverBands = [
-      { x: 64, y: 0, w: 64, h: 128 },
-      { x: 96, y: 96, w: 64, h: 128 }
+      { x: 64, y: 0,  w: 64, h: 128 },  // cols 2-3, rows 0-3
+      { x: 96, y: 96, w: 96, h: 128 }   // cols 3-5, rows 3-6 (extended to cover bridge at col 5)
     ];
 
     riverBands.forEach(({ x, y, w, h }) => {
