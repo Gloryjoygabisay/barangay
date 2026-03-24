@@ -27,6 +27,8 @@ export type UiTextKey =
   | 'courage'
   | 'supplies'
   | 'score'
+  | 'controlsHeading'
+  | 'controlsHeading'
   | 'instructionsHeading'
   | 'instructionsBody'
   | 'close'
@@ -149,6 +151,10 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   instructionsBody: {
     en: 'Move with the on-screen pad or arrow keys. Walk into a glowing section to face a logic challenge, then choose your answer.',
     tl: 'Gumalaw gamit ang on-screen pad o arrow keys. Lumapit sa kumikislap na bahagi para harapin ang hamon ng lohika, saka pumili ng sagot.'
+  },
+  controlsHeading: {
+    en: 'Controls',
+    tl: 'Mga Kontrol'
   },
   close: {
     en: 'Continue crossing',

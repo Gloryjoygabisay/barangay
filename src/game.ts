@@ -46,6 +46,8 @@ class VillageScene extends Phaser.Scene {
   private activeEncounterId: string | null = null;
   private dismissedEncounterId: string | null = null;
   private completed = new Set<string>();
+  private shownLocationBanners = new Set<string>();
+  private locationBannerTimer: ReturnType<typeof setTimeout> | null = null;
   private questionProgressMap = new Map<string, number>();
   private hotspots: Hotspot[] = [];
   private thumbstickState = { left: false, right: false, up: false, down: false };
@@ -121,6 +123,7 @@ class VillageScene extends Phaser.Scene {
 
     this.updatePlayerSprite(dx, dy);
 
+    this.checkLocationBanners();
     this.checkEncounters();
   }
 
@@ -151,6 +154,8 @@ class VillageScene extends Phaser.Scene {
     if (decorId === 7 || decorId === 27 || decorId === 28) return true;
     // Building tiles are solid
     if (decorId === 5 || decorId === 6) return false;
+    // Tree tiles are solid — they frame the path and guide direction
+    if (decorId === 21 || decorId === 22) return false;
 
     const groundId = this.map.getTileAt(tileX, tileY, false, 'Ground')?.index ?? 0;
     // River water requires a bridge to cross
@@ -371,6 +376,45 @@ class VillageScene extends Phaser.Scene {
     camera.stopFollow();
     camera.setZoom(1);
     camera.centerOn(MAP_WIDTH / 2, MAP_HEIGHT / 2);
+  }
+
+  // Show a brief location-name banner the first time the player enters any hotspot area.
+  private checkLocationBanners(): void {
+    const BANNER_RADIUS = 72; // wider than encounter trigger so banner appears first
+    for (const hotspot of this.hotspots) {
+      if (this.shownLocationBanners.has(hotspot.id)) continue;
+      const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, hotspot.x, hotspot.y);
+      if (dist < BANNER_RADIUS) {
+        this.shownLocationBanners.add(hotspot.id);
+        const encounter = encounters.find((e) => e.hotspotId === hotspot.id);
+        const name = encounter ? localizeText(encounter.location, this.language) : hotspot.id;
+        this.showLocationBanner(name);
+        break;
+      }
+    }
+  }
+
+  private showLocationBanner(name: string): void {
+    const popup = document.getElementById('location-popup');
+    if (!popup) return;
+
+    if (this.locationBannerTimer !== null) {
+      clearTimeout(this.locationBannerTimer);
+      this.locationBannerTimer = null;
+    }
+
+    popup.textContent = name;
+    popup.classList.remove('hidden', 'fade-out');
+
+    // Fade out after 2 s, then hide
+    this.locationBannerTimer = setTimeout(() => {
+      popup.classList.add('fade-out');
+      this.locationBannerTimer = setTimeout(() => {
+        popup.classList.add('hidden');
+        popup.classList.remove('fade-out');
+        this.locationBannerTimer = null;
+      }, 400);
+    }, 2000);
   }
 
   private checkEncounters(): void {
@@ -608,6 +652,7 @@ class VillageScene extends Phaser.Scene {
     this.setText('supplies-label', t('supplies', this.language));
     this.setText('instructions-heading', t('instructionsHeading', this.language));
     this.setText('instructions-body', t('instructionsBody', this.language));
+    this.setText('controls-heading', t('controlsHeading', this.language));
     this.setText('close-dialogue', t('close', this.language));
     this.refreshGameOverUi();
   }

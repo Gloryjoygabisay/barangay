@@ -296,6 +296,73 @@ h2 {
   line-height: 1.45;
 }
 
+/* Controls card — middle section of right panel */
+.controls-card {
+  background: rgba(230, 244, 255, 0.9);
+  border: 1px solid rgba(52, 100, 140, 0.22);
+  border-radius: 20px;
+  box-shadow: 0 14px 32px rgba(10, 30, 60, 0.14);
+  padding: 1rem;
+}
+
+.controls-card h2 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #1e4a6e;
+}
+
+.controls-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.45rem 0.75rem;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+.controls-grid kbd {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  background: #e4f0fb;
+  border: 1px solid #a8cce4;
+  border-bottom-width: 2px;
+  border-radius: 7px;
+  font-family: monospace;
+  font-size: 0.78rem;
+  color: #134872;
+  white-space: nowrap;
+}
+
+.controls-grid span {
+  font-size: 0.82rem;
+  color: #2a5070;
+}
+
+/* Location popup — appears briefly when player enters a named area */
+.location-popup {
+  position: absolute;
+  bottom: 4.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 30, 60, 0.82);
+  color: #f0f8ff;
+  padding: 0.55rem 1.4rem;
+  border-radius: 999px;
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 20;
+  transition: opacity 0.4s ease;
+}
+
+.location-popup.fade-out {
+  opacity: 0;
+}
+
+
 .question-progress {
   margin-top: 0.35rem;
   font-size: 0.78rem;

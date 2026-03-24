@@ -99,11 +99,22 @@
               </div>
             </div>
           </section>
+          <section class="controls-card">
+            <h2 id="controls-heading"></h2>
+            <div class="controls-grid">
+              <kbd>↑ W</kbd><span>Move Up</span>
+              <kbd>↓ S</kbd><span>Move Down</span>
+              <kbd>← A</kbd><span>Move Left</span>
+              <kbd>→ D</kbd><span>Move Right</span>
+            </div>
+          </section>
           <section class="instructions-card">
             <h2 id="instructions-heading"></h2>
             <p id="instructions-body"></p>
           </section>
         </aside>
+        <!-- Location banner: shown briefly when player first enters a named area -->
+        <div id="location-popup" class="location-popup hidden" aria-live="polite"></div>
         <section id="dialogue-panel" class="dialogue hidden" aria-live="polite">
           <div class="dialogue-card">
             <p class="dialogue-location" id="dialogue-location"></p>
