@@ -243,6 +243,29 @@ h2 {
   padding: 1rem;
 }
 
+.score-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  background: linear-gradient(135deg, rgba(30, 90, 138, 0.15), rgba(30, 90, 138, 0.08));
+  border: 1px solid rgba(30, 90, 138, 0.2);
+  border-radius: 12px;
+}
+
+.score-display span {
+  font-size: 0.82rem;
+  color: #1e4a6e;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.score-display strong {
+  font-size: 1.6rem;
+  color: #124878;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -271,6 +294,31 @@ h2 {
 .instructions-card p {
   margin-top: 0.8rem;
   line-height: 1.45;
+}
+
+.question-progress {
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #1a6070;
+  font-weight: 700;
+}
+
+.game-over-card {
+  text-align: center;
+}
+
+.game-over-score {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #124878;
+}
+
+.game-over-card .primary-button {
+  margin-top: 1.25rem;
+  width: 100%;
 }
 
 .dialogue {

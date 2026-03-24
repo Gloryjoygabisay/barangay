@@ -26,12 +26,22 @@ export type UiTextKey =
   | 'trust'
   | 'courage'
   | 'supplies'
+  | 'score'
   | 'instructionsHeading'
   | 'instructionsBody'
   | 'close'
   | 'completed'
   | 'resultPrefix'
-  | 'encounterPrompt';
+  | 'encounterPrompt'
+  | 'questionLabel'
+  | 'ofLabel'
+  | 'checkpointCleared'
+  | 'checkpointBody'
+  | 'gameOver'
+  | 'gameOverTitle'
+  | 'gameOverBody'
+  | 'finalScore'
+  | 'playAgain';
 
 export const uiText: Record<UiTextKey, LocalizedText> = {
   startEyebrow: {
@@ -126,6 +136,10 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
     en: 'Planks',
     tl: 'Tabla'
   },
+  score: {
+    en: 'Score',
+    tl: 'Puntos'
+  },
   instructionsHeading: {
     en: 'How to Play',
     tl: 'Paano Maglaro'
@@ -149,6 +163,42 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   encounterPrompt: {
     en: 'Answer the logic question:',
     tl: 'Sagutin ang tanong ng lohika:'
+  },
+  questionLabel: {
+    en: 'Question',
+    tl: 'Tanong'
+  },
+  ofLabel: {
+    en: 'of',
+    tl: 'ng'
+  },
+  checkpointCleared: {
+    en: 'Checkpoint Cleared! ⭐',
+    tl: 'Tagumpay sa Checkpoint! ⭐'
+  },
+  checkpointBody: {
+    en: 'You answered all 3 questions correctly and may continue your journey!',
+    tl: 'Nasagot mo nang tama ang lahat ng 3 tanong at maaari kang magpatuloy sa iyong paglalakbay!'
+  },
+  gameOver: {
+    en: 'Game Over',
+    tl: 'Tapos na ang Laro'
+  },
+  gameOverTitle: {
+    en: 'You Fell! 😱',
+    tl: 'Nahulog Ka! 😱'
+  },
+  gameOverBody: {
+    en: 'A wrong answer caused you to fall from the bridge. Better luck next time!',
+    tl: 'Ang maling sagot ay naging sanhi ng pagkahulog mo mula sa tulay. Subukan muli sa susunod!'
+  },
+  finalScore: {
+    en: 'Final Score',
+    tl: 'Huling Puntos'
+  },
+  playAgain: {
+    en: 'Try Again',
+    tl: 'Subukan Ulit'
   }
 };
 

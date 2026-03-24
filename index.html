@@ -80,6 +80,10 @@
         <aside class="panel">
           <section class="stats-card">
             <h2 id="stats-heading"></h2>
+            <div class="score-display">
+              <span id="score-label"></span>
+              <strong id="score-value">0</strong>
+            </div>
             <div class="stats-grid">
               <div>
                 <span id="trust-label"></span>
@@ -103,6 +107,7 @@
         <section id="dialogue-panel" class="dialogue hidden" aria-live="polite">
           <div class="dialogue-card">
             <p class="dialogue-location" id="dialogue-location"></p>
+            <p id="question-progress" class="question-progress"></p>
             <h2 id="dialogue-title"></h2>
             <p id="dialogue-body"></p>
             <div id="choice-list" class="choice-list"></div>
@@ -117,6 +122,15 @@
           <p id="about-body"></p>
           <p class="version-line"><span id="about-version-label"></span> <strong id="about-version-value"></strong></p>
           <button id="close-about" class="secondary-button" type="button"></button>
+        </div>
+      </section>
+      <section id="game-over-panel" class="about-panel hidden" aria-live="polite">
+        <div class="about-card game-over-card">
+          <p class="dialogue-location" id="game-over-kicker"></p>
+          <h2 id="game-over-title"></h2>
+          <p id="game-over-body"></p>
+          <p id="game-over-score" class="game-over-score"></p>
+          <button id="play-again-button" class="primary-button" type="button"></button>
         </div>
       </section>
     </div>

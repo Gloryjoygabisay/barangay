@@ -2,146 +2,267 @@ import type { Language, LocalizedText } from './localization';
 
 export type StatKey = 'trust' | 'courage' | 'supplies';
 
-export type EncounterChoice = {
+export type QuizChoice = {
   id: string;
   text: LocalizedText;
   result: LocalizedText;
+  isCorrect: boolean;
   effects: Partial<Record<StatKey, number>>;
+};
+
+export type QuizQuestion = {
+  id: string;
+  title: LocalizedText;
+  body: LocalizedText;
+  choices: QuizChoice[];
 };
 
 export type Encounter = {
   id: string;
   hotspotId: string;
   location: LocalizedText;
-  title: LocalizedText;
-  body: LocalizedText;
-  choices: EncounterChoice[];
+  level: number;
+  questions: QuizQuestion[];
 };
 
 export const encounters: Encounter[] = [
   {
     id: 'bridge-puzzle',
     hotspotId: 'bridge',
-    location: {
-      en: 'Bamboo Bridge',
-      tl: 'Tulayang Kawayan'
-    },
-    title: {
-      en: 'The Number Pattern',
-      tl: 'Ang Pattern ng Bilang'
-    },
-    body: {
-      en: 'A section of planks is marked with numbers: 2, 4, 6, ?, 10. You must step on the correct plank to cross safely. What is the missing number?',
-      tl: 'Ang isang bahagi ng mga tabla ay may mga numero: 2, 4, 6, ?, 10. Kailangan mong tumuntong sa tamang tabla para makatawid nang ligtas. Ano ang nawawalang numero?'
-    },
-    choices: [
+    level: 1,
+    location: { en: 'Bamboo Bridge', tl: 'Tulayang Kawayan' },
+    questions: [
       {
-        id: 'answer-8',
-        text: {
-          en: '8 — the pattern increases by 2 each time.',
-          tl: '8 — ang pattern ay nagdaragdag ng 2 sa bawat pagkakataon.'
+        id: 'bridge-q1',
+        title: { en: 'The Number Pattern', tl: 'Ang Pattern ng Bilang' },
+        body: {
+          en: 'A section of planks is marked: 2, 4, 6, ?, 10. Step on the correct plank to cross safely. What is the missing number?',
+          tl: 'Ang mga tabla ay may marka: 2, 4, 6, ?, 10. Tumuntong sa tamang tabla para makatawid nang ligtas. Ano ang nawawalang numero?'
         },
-        result: {
-          en: 'Correct! You step confidently across the safe plank and move forward.',
-          tl: 'Tama! Tiwala kang tumuntong sa ligtas na tabla at sumusulong ka.'
-        },
-        effects: { courage: 2, trust: 1 }
+        choices: [
+          {
+            id: 'bridge-q1-correct',
+            text: { en: '8 — the pattern increases by 2 each time.', tl: '8 — ang pattern ay nagdaragdag ng 2 sa bawat pagkakataon.' },
+            result: { en: 'Correct! You step confidently onto the safe plank.', tl: 'Tama! Tiwala kang tumuntong sa ligtas na tabla.' },
+            isCorrect: true,
+            effects: { courage: 1 }
+          },
+          {
+            id: 'bridge-q1-wrong',
+            text: { en: '7 — roughly midway between 6 and 10.', tl: '7 — halos nasa gitna ng 6 at 10.' },
+            result: { en: 'Wrong! The plank cracks and you fall into the river!', tl: 'Mali! Sumibak ang tabla at nahulog ka sa ilog!' },
+            isCorrect: false,
+            effects: { supplies: -1 }
+          }
+        ]
       },
       {
-        id: 'answer-7',
-        text: {
-          en: '7 — roughly midway between 6 and 10.',
-          tl: '7 — halos nasa gitna ng 6 at 10.'
+        id: 'bridge-q2',
+        title: { en: 'The Weight Riddle', tl: 'Ang Palaisipan ng Bigat' },
+        body: {
+          en: 'The bridge keeper asks: "Which is heavier — 1 kg of bamboo or 1 kg of stone?"',
+          tl: 'Tinanong ng tagabantay ng tulay: "Alin ang mas mabigat — 1 kg na kawayan o 1 kg na bato?"'
         },
-        result: {
-          en: 'Wrong! The plank cracks under your foot. You barely hold on, losing precious planks.',
-          tl: 'Mali! Sumibak ang tabla sa iyong paa. Halos malaglag ka, nawala ang iyong mahahalagang tabla.'
+        choices: [
+          {
+            id: 'bridge-q2-correct',
+            text: { en: 'They weigh the same — both are 1 kg.', tl: 'Magkapantay ang bigat — parehong 1 kg.' },
+            result: { en: 'Correct! The keeper nods and lets you pass.', tl: 'Tama! Tumango ang tagabantay at pinayagan ka niyang makaraan.' },
+            isCorrect: true,
+            effects: { trust: 1 }
+          },
+          {
+            id: 'bridge-q2-wrong',
+            text: { en: 'Stone is heavier — it is denser.', tl: 'Mas mabigat ang bato — mas siksik ito.' },
+            result: { en: 'Wrong! The keeper shakes his head. You lose your footing!', tl: 'Mali! Umiling ang tagabantay. Natisod ka!' },
+            isCorrect: false,
+            effects: { supplies: -1 }
+          }
+        ]
+      },
+      {
+        id: 'bridge-q3',
+        title: { en: 'The Banana Trick', tl: 'Ang Trick ng Saging' },
+        body: {
+          en: 'You see 5 bananas on the bridge. You take away 3. How many bananas do YOU now have?',
+          tl: 'Nakakita ka ng 5 saging sa tulay. Kinuha mo ang 3. Ilan na saging ang MAYROON KA ngayon?'
         },
-        effects: { courage: 1, supplies: -1 }
+        choices: [
+          {
+            id: 'bridge-q3-correct',
+            text: { en: '3 — I took 3, so I have 3.', tl: '3 — kinuha ko ang 3, kaya mayroon akong 3.' },
+            result: { en: 'Correct! You cross the first section of the bamboo bridge!', tl: 'Tama! Natawid mo ang unang bahagi ng tulayang kawayan!' },
+            isCorrect: true,
+            effects: { courage: 1, trust: 1 }
+          },
+          {
+            id: 'bridge-q3-wrong',
+            text: { en: '2 — 5 minus 3 equals 2.', tl: '2 — 5 minus 3 ay katumbas ng 2.' },
+            result: { en: 'Wrong! The trick was about what YOU have, not what remains on the bridge!', tl: 'Mali! Ang trick ay tungkol sa kung ano ang MAYROON KA, hindi kung ano ang naiwan sa tulay!' },
+            isCorrect: false,
+            effects: { supplies: -1 }
+          }
+        ]
       }
     ]
   },
   {
     id: 'market-puzzle',
     hotspotId: 'market',
-    location: {
-      en: 'Forest Clearing',
-      tl: 'Kaparangan sa Kagubatan'
-    },
-    title: {
-      en: "The Merchant's Riddle",
-      tl: 'Palaisipan ng Mangangalakal'
-    },
-    body: {
-      en: 'A forest merchant guards the rope bridge. "I am thinking of a number. Double it, then add 4, and you get 14. What is my number?" he asks, blocking the path.',
-      tl: 'Isang mangangalakal sa kagubatan ang nagbabantay ng tulay na lubid. "Nag-iisip ako ng numero. I-doble ito, pagkatapos ay dagdag ng 4, at makukuha mo ang 14. Ano ang aking numero?" tanong niya, hinahadlangan ang daan.'
-    },
-    choices: [
+    level: 2,
+    location: { en: 'Forest Clearing', tl: 'Kaparangan sa Kagubatan' },
+    questions: [
       {
-        id: 'answer-5',
-        text: {
-          en: '5 — if 2x + 4 = 14, then x = 5.',
-          tl: '5 — kung 2x + 4 = 14, kung gayon x = 5.'
+        id: 'market-q1',
+        title: { en: "The Merchant's Riddle", tl: 'Palaisipan ng Mangangalakal' },
+        body: {
+          en: '"I am thinking of a number. Double it, then add 4, and you get 14. What is my number?" the merchant asks, blocking the path.',
+          tl: '"Nag-iisip ako ng numero. I-doble ito, pagkatapos ay dagdag ng 4, at makukuha mo ang 14. Ano ang aking numero?" tanong ng mangangalakal, hinahadlangan ang daan.'
         },
-        result: {
-          en: 'Correct! The merchant steps aside, impressed by your quick thinking.',
-          tl: 'Tama! Lumayo ang mangangalakal, humanga sa iyong mabilis na pag-iisip.'
-        },
-        effects: { trust: 2, courage: 1 }
+        choices: [
+          {
+            id: 'market-q1-correct',
+            text: { en: '5 — if 2x + 4 = 14, then x = 5.', tl: '5 — kung 2x + 4 = 14, kung gayon x = 5.' },
+            result: { en: 'Correct! The merchant steps aside, impressed by your quick thinking.', tl: 'Tama! Lumayo ang mangangalakal, humanga sa iyong mabilis na pag-iisip.' },
+            isCorrect: true,
+            effects: { trust: 1 }
+          },
+          {
+            id: 'market-q1-wrong',
+            text: { en: '9 — half of 14 rounded up.', tl: '9 — kalahati ng 14 na pinataas.' },
+            result: { en: 'Wrong! You stumble on the crossing!', tl: 'Mali! Natisod ka sa tawiran!' },
+            isCorrect: false,
+            effects: { supplies: -1 }
+          }
+        ]
       },
       {
-        id: 'answer-9',
-        text: {
-          en: '9 — half of 14 rounded up.',
-          tl: '9 — kalahati ng 14 na pinataas.'
+        id: 'market-q2',
+        title: { en: 'The Bamboo Pole', tl: 'Ang Kawayan' },
+        body: {
+          en: 'A bamboo pole is cut in half. Then each half is cut in half again. How many pieces are there in total?',
+          tl: 'Ang isang kawayan ay pinutol sa kalahati. Pagkatapos, ang bawat kalahati ay pinutol muli sa kalahati. Ilan na piraso sa kabuuan?'
         },
-        result: {
-          en: 'Wrong! The merchant shakes his head and makes you take the longer path around.',
-          tl: 'Mali! Umiling ang mangangalakal at pinapaligid ka ng mas mahabang landas.'
+        choices: [
+          {
+            id: 'market-q2-correct',
+            text: { en: '4 pieces — each cut doubles the count.', tl: '4 piraso — ang bawat putol ay nagdodoble ng bilang.' },
+            result: { en: 'Correct! You count the pieces and move forward.', tl: 'Tama! Binilang mo ang mga piraso at sumusulong ka.' },
+            isCorrect: true,
+            effects: { courage: 1 }
+          },
+          {
+            id: 'market-q2-wrong',
+            text: { en: '2 pieces — cut in half means 2.', tl: '2 piraso — ang pagputol sa kalahati ay nangangahulugang 2.' },
+            result: { en: 'Wrong! You miscounted and lost your balance!', tl: 'Mali! Nagkamali ka sa pagbilang at nawala ang iyong balanse!' },
+            isCorrect: false,
+            effects: { supplies: -1 }
+          }
+        ]
+      },
+      {
+        id: 'market-q3',
+        title: { en: 'The Day Puzzle', tl: 'Palaisipan ng Araw' },
+        body: {
+          en: 'Today is Wednesday. Your village celebration is in exactly 3 days. What day is it?',
+          tl: 'Ngayon ay Miyerkules. Ang selebrasyon ng iyong nayon ay sa loob ng eksaktong 3 araw. Anong araw iyon?'
         },
-        effects: { courage: 1, supplies: -1 }
+        choices: [
+          {
+            id: 'market-q3-correct',
+            text: { en: 'Saturday — Wednesday + 3 days.', tl: 'Sabado — Miyerkules + 3 araw.' },
+            result: { en: 'Correct! You mark the day and push forward across the clearing.', tl: 'Tama! Minarkahan mo ang araw at sumusulong sa kaparangan.' },
+            isCorrect: true,
+            effects: { trust: 1, courage: 1 }
+          },
+          {
+            id: 'market-q3-wrong',
+            text: { en: 'Friday — Wednesday + 2 days.', tl: 'Biyernes — Miyerkules + 2 araw.' },
+            result: { en: 'Wrong! You confused the days and stumbled!', tl: 'Mali! Nalito ka sa mga araw at natisod!' },
+            isCorrect: false,
+            effects: { supplies: -1 }
+          }
+        ]
       }
     ]
   },
   {
     id: 'ridge-puzzle',
     hotspotId: 'ridge',
-    location: {
-      en: 'Final Crossing',
-      tl: 'Huling Tawiran'
-    },
-    title: {
-      en: "The Elder's Logic Test",
-      tl: 'Pagsubok ng Lohika ng Matanda'
-    },
-    body: {
-      en: 'An elder sits at the last section of the bridge. "If it rains, the river rises. The river has risen. Did it necessarily rain?" she asks, hand resting on the final plank.',
-      tl: 'Isang matanda ang nakaupo sa huling bahagi ng tulay. "Kung umulan, ang ilog ay tataas. Ang ilog ay tumaas na. Kailangan bang umulan?" tanong niya, kamay na nakapatong sa huling tabla.'
-    },
-    choices: [
+    level: 3,
+    location: { en: 'Final Crossing', tl: 'Huling Tawiran' },
+    questions: [
       {
-        id: 'answer-not-necessarily',
-        text: {
-          en: 'Not necessarily — something else could have raised the river.',
-          tl: 'Hindi kinakailangan — may iba pang bagay na maaaring nagtaas ng ilog.'
+        id: 'ridge-q1',
+        title: { en: "The Elder's Logic Test", tl: 'Pagsubok ng Lohika ng Matanda' },
+        body: {
+          en: '"If it rains, the river rises. The river has risen. Did it necessarily rain?" the elder asks, hand on the final plank.',
+          tl: '"Kung umulan, ang ilog ay tataas. Ang ilog ay tumaas na. Kailangan bang umulan?" tanong ng matanda, kamay sa huling tabla.'
         },
-        result: {
-          en: 'Correct! The elder smiles and lifts the final plank. You have crossed the bridge!',
-          tl: 'Tama! Ngumiti ang matanda at itinaas ang huling tabla. Natawid mo na ang tulay!'
-        },
-        effects: { trust: 2, supplies: 1 }
+        choices: [
+          {
+            id: 'ridge-q1-correct',
+            text: { en: 'Not necessarily — something else could have raised the river.', tl: 'Hindi kinakailangan — may iba pang bagay na maaaring nagtaas ng ilog.' },
+            result: { en: 'Correct! The elder smiles and lifts the first plank for you.', tl: 'Tama! Ngumiti ang matanda at itinaas ang unang tabla para sa iyo.' },
+            isCorrect: true,
+            effects: { trust: 1 }
+          },
+          {
+            id: 'ridge-q1-wrong',
+            text: { en: 'Yes — if the river rose, it must have rained.', tl: 'Oo — kung tumaas ang ilog, dapat ay umulan.' },
+            result: { en: 'Wrong! That is a logical fallacy. You stumble on the final crossing!', tl: 'Mali! Iyon ay isang lohikal na kamalian. Natisod ka sa huling tawiran!' },
+            isCorrect: false,
+            effects: { supplies: -1 }
+          }
+        ]
       },
       {
-        id: 'answer-yes',
-        text: {
-          en: 'Yes — if the river rose, it must have rained.',
-          tl: 'Oo — kung tumaas ang ilog, dapat ay umulan.'
+        id: 'ridge-q2',
+        title: { en: 'The Animal Syllogism', tl: 'Ang Syllogism ng Hayop' },
+        body: {
+          en: '"All tigers are animals. All animals need food. Do all tigers need food?" the elder asks with a knowing smile.',
+          tl: '"Lahat ng tigre ay hayop. Lahat ng hayop ay nangangailangan ng pagkain. Kailangan ba ng pagkain ng lahat ng tigre?" tanong ng matanda nang may ngiting pamilyar.'
         },
-        result: {
-          en: 'Wrong! The elder shakes her head. "That is a logical fallacy, young one." You stumble on the crossing.',
-          tl: 'Mali! Umiling ang matanda. "Iyon ay lohikal na kamalian, batang ito." Natisod ka sa tawiran.'
+        choices: [
+          {
+            id: 'ridge-q2-correct',
+            text: { en: 'Yes — this follows logically from both statements.', tl: 'Oo — ito ay lohikal na sumusunod sa parehong pahayag.' },
+            result: { en: 'Correct! The elder nods. A valid syllogism — well done!', tl: 'Tama! Tumango ang matanda. Isang wastong syllogism — magaling!' },
+            isCorrect: true,
+            effects: { courage: 1 }
+          },
+          {
+            id: 'ridge-q2-wrong',
+            text: { en: 'Not necessarily — tigers might be exceptions.', tl: 'Hindi kinakailangan — maaaring may eksepsyon ang mga tigre.' },
+            result: { en: 'Wrong! Tigers cannot escape logic — or the plank!', tl: 'Mali! Hindi makakatakas ang mga tigre sa lohika — o sa tabla!' },
+            isCorrect: false,
+            effects: { supplies: -1 }
+          }
+        ]
+      },
+      {
+        id: 'ridge-q3',
+        title: { en: 'The Final Riddle', tl: 'Ang Huling Palaisipan' },
+        body: {
+          en: 'The elder smiles mischievously: "A rooster sits at the peak of a roof and lays an egg. Which side does the egg roll down?"',
+          tl: 'Nakangiti ang matanda nang may kalokohan: "Ang isang tandang ay nakaupo sa tuktok ng bubong at nagitlog. Saan bahagi ng bubong naggugulong ang itlog?"'
         },
-        effects: { courage: 2, trust: 1 }
+        choices: [
+          {
+            id: 'ridge-q3-correct',
+            text: { en: 'Roosters do not lay eggs!', tl: 'Hindi nagitlog ang mga tandang!' },
+            result: { en: 'Correct! The elder laughs. "You have crossed the bridge!" 🎉', tl: 'Tama! Malakas na natawa ang matanda. "Natawid mo na ang tulay!" 🎉' },
+            isCorrect: true,
+            effects: { trust: 2, supplies: 1 }
+          },
+          {
+            id: 'ridge-q3-wrong',
+            text: { en: 'The left side — it is the windward side.', tl: 'Ang kaliwang bahagi — iyon ang gawi ng hangin.' },
+            result: { en: 'Wrong! A rooster cannot lay eggs. You stumble at the last hurdle!', tl: 'Mali! Hindi magagawa ng tandang na magitlog. Natisod ka sa huling sagabal!' },
+            isCorrect: false,
+            effects: { supplies: -1 }
+          }
+        ]
       }
     ]
   }
