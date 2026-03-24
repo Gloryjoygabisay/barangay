@@ -321,6 +321,81 @@ h2 {
   width: 100%;
 }
 
+/* ── Mission card ───────────────────────────────────────── */
+
+.mission-card {
+  padding: 1rem;
+  background: rgba(230, 244, 255, 0.9);
+  border: 1px solid rgba(52, 100, 140, 0.22);
+  border-radius: 20px;
+  box-shadow: 0 14px 32px rgba(10, 30, 60, 0.14);
+}
+
+.mission-level-name {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #124878;
+  line-height: 1.35;
+}
+
+.mission-objectives {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.mission-objective {
+  font-size: 0.88rem;
+  color: #1a4a68;
+  line-height: 1.4;
+}
+
+.mission-objective--done {
+  color: #2e7d32;
+  text-decoration: line-through;
+  opacity: 0.75;
+}
+
+.mission-timer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 0.85rem;
+  padding: 0.55rem 0.85rem;
+  background: linear-gradient(135deg, rgba(30, 90, 138, 0.15), rgba(30, 90, 138, 0.08));
+  border: 1px solid rgba(30, 90, 138, 0.2);
+  border-radius: 12px;
+}
+
+.mission-timer span {
+  font-size: 0.78rem;
+  color: #1e4a6e;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.mission-timer strong {
+  font-size: 1.4rem;
+  color: #124878;
+  font-variant-numeric: tabular-nums;
+}
+
+.mission-timer--urgent {
+  background: linear-gradient(135deg, rgba(139, 46, 30, 0.18), rgba(139, 46, 30, 0.09));
+  border-color: rgba(139, 46, 30, 0.3);
+}
+
+.mission-timer--urgent span {
+  color: #7a2010;
+}
+
+.mission-timer--urgent strong {
+  color: #8b2e1e;
+}
+
 .dialogue {
   position: absolute;
   left: 1rem;
