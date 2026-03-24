@@ -41,7 +41,9 @@ export type UiTextKey =
   | 'gameOverTitle'
   | 'gameOverBody'
   | 'finalScore'
-  | 'playAgain';
+  | 'playAgain'
+  | 'trueFalse'
+  | 'multipleChoice';
 
 export const uiText: Record<UiTextKey, LocalizedText> = {
   startEyebrow: {
@@ -177,8 +179,8 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
     tl: 'Tagumpay sa Checkpoint! ⭐'
   },
   checkpointBody: {
-    en: 'You answered all 3 questions correctly and may continue your journey!',
-    tl: 'Nasagot mo nang tama ang lahat ng 3 tanong at maaari kang magpatuloy sa iyong paglalakbay!'
+    en: 'You answered all questions correctly and may continue your journey!',
+    tl: 'Nasagot mo nang tama ang lahat ng tanong at maaari kang magpatuloy sa iyong paglalakbay!'
   },
   gameOver: {
     en: 'Game Over',
@@ -199,6 +201,14 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   playAgain: {
     en: 'Try Again',
     tl: 'Subukan Ulit'
+  },
+  trueFalse: {
+    en: '🟡 True or False',
+    tl: '🟡 Tama o Mali'
+  },
+  multipleChoice: {
+    en: '🔵 Multiple Choice',
+    tl: '🔵 Maramihang Pagpipilian'
   }
 };
 

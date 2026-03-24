@@ -333,6 +333,7 @@ class VillageScene extends Phaser.Scene {
     const panel = document.getElementById('dialogue-panel');
     const locationEl = document.getElementById('dialogue-location');
     const progressEl = document.getElementById('question-progress');
+    const typeBadge = document.getElementById('question-type-badge');
     const title = document.getElementById('dialogue-title');
     const body = document.getElementById('dialogue-body');
     const choiceList = document.getElementById('choice-list');
@@ -348,6 +349,7 @@ class VillageScene extends Phaser.Scene {
 
     if (this.completed.has(encounter.id)) {
       if (progressEl) progressEl.textContent = '';
+      if (typeBadge) typeBadge.classList.add('hidden');
       title.textContent = t('checkpointCleared', this.language);
       body.textContent = t('checkpointBody', this.language);
       choiceList.replaceChildren();
@@ -364,6 +366,12 @@ class VillageScene extends Phaser.Scene {
       progressEl.textContent = `${t('questionLabel', this.language)} ${questionIdx + 1} ${t('ofLabel', this.language)} ${total}`;
     }
 
+    if (typeBadge) {
+      const badgeKey = question.questionType === 'true-false' ? 'trueFalse' : 'multipleChoice';
+      typeBadge.textContent = t(badgeKey, this.language);
+      typeBadge.className = `question-type-badge type-${question.questionType}`;
+    }
+
     title.textContent = localizeText(question.title, this.language);
     body.textContent = localizeText(question.body, this.language);
 
@@ -376,6 +384,7 @@ class VillageScene extends Phaser.Scene {
       button.textContent = localizeText(choice.text, this.language);
       button.addEventListener('click', () => {
         choiceList.replaceChildren();
+        if (typeBadge) typeBadge.classList.add('hidden');
 
         if (choice.isCorrect) {
           Object.entries(choice.effects).forEach(([key, value]) => {

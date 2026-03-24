@@ -305,6 +305,32 @@ h2 {
   font-weight: 700;
 }
 
+.question-type-badge {
+  display: inline-block;
+  margin-top: 0.4rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #dff0f7;
+  color: #0c4a6e;
+  border: 1px solid #a8d5e8;
+}
+
+.question-type-badge.type-true-false {
+  background: #fef9c3;
+  color: #713f12;
+  border-color: #fcd34d;
+}
+
+.question-type-badge.type-multiple-choice {
+  background: #dbeafe;
+  color: #1e3a8a;
+  border-color: #93c5fd;
+}
+
 .game-over-card {
   text-align: center;
 }
