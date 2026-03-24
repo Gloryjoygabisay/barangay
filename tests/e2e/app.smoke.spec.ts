@@ -4,10 +4,10 @@ test.describe('app browser smoke test', () => {
   test('renders the main page and about panel', async ({ page }) => {
     await page.goto('./');
 
-    await expect(page).toHaveTitle(/Trail Through the Barangay/i);
+    await expect(page).toHaveTitle(/Bamboo Bridge Logic Quest/i);
     await expect(page.locator('#start-screen')).toBeVisible();
-    await expect(page.locator('#start-title')).toHaveText('Trail Through the Barangay');
-    await expect(page.locator('#start-button')).toHaveText('Start journey');
+    await expect(page.locator('#start-title')).toHaveText('Bamboo Bridge Logic Quest');
+    await expect(page.locator('#start-button')).toHaveText('Start crossing');
     await expect(page.locator('#start-about-button')).toHaveText('About');
 
     const aboutPanel = page.locator('#about-panel');

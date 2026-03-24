@@ -39,14 +39,14 @@ describe('app bootstrap smoke test', () => {
   it('renders the start screen and wires core UI actions', async () => {
     await import('../src/main');
 
-    expect(document.getElementById('start-title')?.textContent).toBe('Trail Through the Barangay');
-    expect(document.getElementById('start-button')?.textContent).toBe('Start journey');
+    expect(document.getElementById('start-title')?.textContent).toBe('Bamboo Bridge Logic Quest');
+    expect(document.getElementById('start-button')?.textContent).toBe('Start crossing');
 
     const startLanguageSelect = document.getElementById('start-language-select') as HTMLSelectElement;
     startLanguageSelect.value = 'tl';
     startLanguageSelect.dispatchEvent(new Event('change'));
 
-    expect(document.getElementById('start-title')?.textContent).toBe('Landas sa Kabundukan');
+    expect(document.getElementById('start-title')?.textContent).toBe('Hamon ng Kawayan');
     expect(document.getElementById('about-button')?.textContent).toBe('Tungkol Dito');
 
     (document.getElementById('start-about-button') as HTMLButtonElement).click();
