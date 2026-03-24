@@ -5,7 +5,9 @@ import { t, type Language } from './data/localization';
 type GameStats = Record<StatKey, number>;
 
 type Hotspot = {
+  encounterId: string;
   id: string;
+  level: number;
   x: number;
   y: number;
   sprite: Phaser.GameObjects.Image;
@@ -48,6 +50,7 @@ class VillageScene extends Phaser.Scene {
   private completed = new Set<string>();
   private questionProgressMap = new Map<string, number>();
   private hotspots: Hotspot[] = [];
+  private currentLevel = 1;
   private thumbstickState = { left: false, right: false, up: false, down: false };
   private isDialogueOpen = false;
   private spawnPoint = { x: 80, y: 304 };
@@ -167,20 +170,28 @@ class VillageScene extends Phaser.Scene {
         return [];
       }
 
+      const isVisible = encounter.level === 1;
+      const isBridge = encounter.hotspotId === 'bridge';
+      const displaySize = isBridge ? 60 : 36;
+
       const sprite = this.add
         .image(point.x, point.y - 20, HOTSPOT_TEXTURES[encounter.hotspotId] ?? 'marker-market')
-        .setDisplaySize(36, 36)
-        .setDepth(3);
+        .setDisplaySize(displaySize, displaySize)
+        .setDepth(3)
+        .setVisible(isVisible);
 
       const label = this.add
         .text(point.x - 48, point.y + 8, localizeText(encounter.location, this.language), titleStyle)
         .setDepth(3)
         .setWordWrapWidth(96)
-        .setAlign('center');
+        .setAlign('center')
+        .setVisible(isVisible);
 
       return [
         {
+          encounterId: encounter.id,
           id: encounter.hotspotId,
+          level: encounter.level,
           x: point.x,
           y: point.y,
           sprite,
@@ -248,6 +259,9 @@ class VillageScene extends Phaser.Scene {
     const closeButton = document.getElementById('close-dialogue');
     closeButton?.addEventListener('click', () => this.closeDialogue());
 
+    const nextLevelButton = document.getElementById('next-level-button');
+    nextLevelButton?.addEventListener('click', () => this.advanceToNextLevel());
+
     const playAgainButton = document.getElementById('play-again-button');
     playAgainButton?.addEventListener('click', () => {
       window.location.reload();
@@ -266,7 +280,10 @@ class VillageScene extends Phaser.Scene {
     this.playerShadow.setSize(isMobile ? 24 : 18, isMobile ? 10 : 8);
 
     this.hotspots.forEach((hotspot) => {
-      hotspot.sprite.setDisplaySize(isMobile ? 52 : 36, isMobile ? 52 : 36);
+      const isBridge = hotspot.id === 'bridge';
+      const baseSize = isBridge ? 60 : 36;
+      const mobileSize = isBridge ? 80 : 52;
+      hotspot.sprite.setDisplaySize(isMobile ? mobileSize : baseSize, isMobile ? mobileSize : baseSize);
       hotspot.sprite.setPosition(hotspot.x, hotspot.y - (isMobile ? 28 : 20));
       hotspot.label
         .setFontSize(isMobile ? '16px' : '13px')
@@ -292,7 +309,7 @@ class VillageScene extends Phaser.Scene {
     if (this.dismissedEncounterId) {
       const dismissedEncounter = encounters.find((entry) => entry.id === this.dismissedEncounterId);
       const dismissedHotspot = dismissedEncounter
-        ? this.hotspots.find((spot) => spot.id === dismissedEncounter.hotspotId)
+        ? this.hotspots.find((spot) => spot.encounterId === dismissedEncounter.id)
         : undefined;
 
       if (
@@ -313,8 +330,8 @@ class VillageScene extends Phaser.Scene {
         return false;
       }
 
-      const hotspot = this.hotspots.find((spot) => spot.id === entry.hotspotId);
-      if (!hotspot) {
+      const hotspot = this.hotspots.find((spot) => spot.encounterId === entry.id);
+      if (!hotspot || !hotspot.sprite.visible) {
         return false;
       }
 
@@ -337,6 +354,7 @@ class VillageScene extends Phaser.Scene {
     const body = document.getElementById('dialogue-body');
     const choiceList = document.getElementById('choice-list');
     const closeButton = document.getElementById('close-dialogue');
+    const nextLevelButton = document.getElementById('next-level-button');
 
     if (!panel || !locationEl || !title || !body || !choiceList || !closeButton) {
       return;
@@ -351,8 +369,18 @@ class VillageScene extends Phaser.Scene {
       title.textContent = t('checkpointCleared', this.language);
       body.textContent = t('checkpointBody', this.language);
       choiceList.replaceChildren();
-      closeButton.textContent = t('completed', this.language);
-      closeButton.classList.remove('hidden');
+      const hasNextLevel = encounters.some((e) => e.level === encounter.level + 1);
+      if (hasNextLevel) {
+        if (nextLevelButton) {
+          nextLevelButton.textContent = t('nextLevel', this.language);
+          nextLevelButton.classList.remove('hidden');
+        }
+        closeButton.classList.add('hidden');
+      } else {
+        nextLevelButton?.classList.add('hidden');
+        closeButton.textContent = t('completed', this.language);
+        closeButton.classList.remove('hidden');
+      }
       return;
     }
 
@@ -388,12 +416,23 @@ class VillageScene extends Phaser.Scene {
           if (nextIdx >= total) {
             this.completed.add(encounter.id);
             this.questionProgressMap.delete(encounter.id);
-            this.markHotspotCompleted(encounter.hotspotId);
+            this.markHotspotCompleted(encounter.id);
             if (progressEl) progressEl.textContent = '';
             title.textContent = t('checkpointCleared', this.language);
             body.textContent = t('checkpointBody', this.language);
-            closeButton.textContent = t('completed', this.language);
-            closeButton.classList.remove('hidden');
+            const hasNextLevel = encounters.some((e) => e.level === encounter.level + 1);
+            if (hasNextLevel) {
+              const nextLevelBtn = document.getElementById('next-level-button');
+              if (nextLevelBtn) {
+                nextLevelBtn.textContent = t('nextLevel', this.language);
+                nextLevelBtn.classList.remove('hidden');
+              }
+              closeButton.classList.add('hidden');
+            } else {
+              document.getElementById('next-level-button')?.classList.add('hidden');
+              closeButton.textContent = t('completed', this.language);
+              closeButton.classList.remove('hidden');
+            }
           } else {
             this.questionProgressMap.set(encounter.id, nextIdx);
             body.textContent = localizeText(choice.result, this.language);
@@ -441,10 +480,11 @@ class VillageScene extends Phaser.Scene {
       closeButton.textContent = t('close', this.language);
       closeButton.classList.remove('hidden');
     }
+    document.getElementById('next-level-button')?.classList.add('hidden');
   }
 
-  private markHotspotCompleted(hotspotId: string): void {
-    const hotspot = this.hotspots.find((spot) => spot.id === hotspotId);
+  private markHotspotCompleted(encounterId: string): void {
+    const hotspot = this.hotspots.find((spot) => spot.encounterId === encounterId);
     if (!hotspot) {
       return;
     }
@@ -457,9 +497,38 @@ class VillageScene extends Phaser.Scene {
     }
   }
 
+  private advanceToNextLevel(): void {
+    this.currentLevel += 1;
+
+    const newLevelHotspots = this.hotspots.filter((h) => h.level === this.currentLevel);
+    const newHotspotIds = new Set(newLevelHotspots.map((h) => h.id));
+
+    // Hide any completed hotspots at the same map position as the incoming level's hotspots
+    // (e.g. level 1 bridge grayed out beneath the fresh level 4 bridge)
+    this.hotspots
+      .filter((h) => h.level < this.currentLevel && newHotspotIds.has(h.id))
+      .forEach((h) => {
+        h.sprite.setVisible(false);
+        h.label.setVisible(false);
+      });
+
+    newLevelHotspots.forEach((h) => {
+      h.sprite.setVisible(true).clearTint().setAlpha(1);
+      h.label.setVisible(true);
+    });
+
+    this.applyViewportMode();
+
+    const panel = document.getElementById('dialogue-panel');
+    panel?.classList.add('hidden');
+    document.getElementById('next-level-button')?.classList.add('hidden');
+    this.isDialogueOpen = false;
+    this.activeEncounterId = null;
+  }
+
   private refreshHotspotLabels(): void {
     this.hotspots.forEach((hotspot) => {
-      const encounter = encounters.find((entry) => entry.hotspotId === hotspot.id);
+      const encounter = encounters.find((entry) => entry.id === hotspot.encounterId);
       if (!encounter) {
         return;
       }

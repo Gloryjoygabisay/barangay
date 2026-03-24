@@ -37,6 +37,7 @@ export type UiTextKey =
   | 'ofLabel'
   | 'checkpointCleared'
   | 'checkpointBody'
+  | 'nextLevel'
   | 'gameOver'
   | 'gameOverTitle'
   | 'gameOverBody'
@@ -179,6 +180,10 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   checkpointBody: {
     en: 'You answered all 3 questions correctly and may continue your journey!',
     tl: 'Nasagot mo nang tama ang lahat ng 3 tanong at maaari kang magpatuloy sa iyong paglalakbay!'
+  },
+  nextLevel: {
+    en: 'Next Level →',
+    tl: 'Susunod na Antas →'
   },
   gameOver: {
     en: 'Game Over',
