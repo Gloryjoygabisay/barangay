@@ -114,8 +114,10 @@ class VillageScene extends Phaser.Scene {
       dy += speed;
     }
 
-    this.player.x = Phaser.Math.Clamp(this.player.x + dx, 24, MAP_WIDTH - 24);
-    this.player.y = Phaser.Math.Clamp(this.player.y + dy, 28, MAP_HEIGHT - 12);
+    const nextX = Phaser.Math.Clamp(this.player.x + dx, 24, MAP_WIDTH - 24);
+    const nextY = Phaser.Math.Clamp(this.player.y + dy, 28, MAP_HEIGHT - 12);
+    if (this.canMoveTo(nextX, this.player.y)) this.player.x = nextX;
+    if (this.canMoveTo(this.player.x, nextY)) this.player.y = nextY;
 
     this.updatePlayerSprite(dx, dy);
 
@@ -132,6 +134,41 @@ class VillageScene extends Phaser.Scene {
     if (active) {
       this.showEncounter(active);
     }
+  }
+
+  // Collision check: bridge tiles override water; water and cliffs are blocked.
+  // Buildings (tiles 5, 6) are also solid so the player navigates around structures.
+  private isWalkable(worldX: number, worldY: number): boolean {
+    const tileX = Math.floor(worldX / 32);
+    const tileY = Math.floor(worldY / 32);
+
+    if (tileX < 0 || tileY < 0 || tileX >= MAP_WIDTH / 32 || tileY >= MAP_HEIGHT / 32) {
+      return false;
+    }
+
+    const decorId = this.map.getTileAt(tileX, tileY, false, 'Decor')?.index ?? 0;
+    // Bridge tiles are always passable — they sit on top of water
+    if (decorId === 7 || decorId === 27 || decorId === 28) return true;
+    // Building tiles are solid
+    if (decorId === 5 || decorId === 6) return false;
+
+    const groundId = this.map.getTileAt(tileX, tileY, false, 'Ground')?.index ?? 0;
+    // River water requires a bridge to cross
+    if (groundId === 3) return false;
+    // Cliff terrain is impassable
+    if (groundId === 9) return false;
+
+    return true;
+  }
+
+  // Sample three points across the player's foot width so they can slide along walls.
+  private canMoveTo(worldX: number, worldY: number): boolean {
+    const fy = worldY + 6; // sample near the player's feet
+    return (
+      this.isWalkable(worldX - 8, fy) &&
+      this.isWalkable(worldX,     fy) &&
+      this.isWalkable(worldX + 8, fy)
+    );
   }
 
   // River tiles: cols 2-3 rows 0-3 (x=64-128, y=0-128) and cols 3-4 rows 3-6 (x=96-160, y=96-224).
