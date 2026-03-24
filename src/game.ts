@@ -53,6 +53,7 @@ class VillageScene extends Phaser.Scene {
   private spawnPoint = { x: 80, y: 304 };
   private facing: Facing = 'down';
   private walkFrame = 0;
+  private waterGraphics!: Phaser.GameObjects.Graphics;
 
   constructor() {
     super('village');
@@ -75,6 +76,7 @@ class VillageScene extends Phaser.Scene {
   create(): void {
     this.cursors = this.input.keyboard?.createCursorKeys() ?? ({} as Phaser.Types.Input.Keyboard.CursorKeys);
     this.createMap();
+    this.waterGraphics = this.add.graphics().setDepth(0.5);
     this.createHotspots();
     this.createPlayer();
     this.applyViewportMode();
@@ -89,6 +91,8 @@ class VillageScene extends Phaser.Scene {
   }
 
   update(): void {
+    this.animateWater();
+
     if (this.isDialogueOpen) {
       return;
     }
@@ -130,8 +134,39 @@ class VillageScene extends Phaser.Scene {
     }
   }
 
-  private createMap(): void {
-    this.map = this.make.tilemap({ key: 'village-map' });
+  // River tiles: cols 2-3 rows 0-3 (x=64-128, y=0-128) and cols 3-4 rows 3-6 (x=96-160, y=96-224).
+  // Waves animate at depth 0.5 — beneath the bridge decor (depth 1) but above the ground (depth 0).
+  // The transparent plank gaps in the bridge tile let these waves show through.
+  private animateWater(): void {
+    const g = this.waterGraphics;
+    g.clear();
+    const t = this.time.now / 900;
+
+    const riverBands = [
+      { x: 64, y: 0, w: 64, h: 128 },
+      { x: 96, y: 96, w: 64, h: 128 }
+    ];
+
+    riverBands.forEach(({ x, y, w, h }) => {
+      let row = 0;
+      for (let wy = y + 6; wy < y + h; wy += 10, row++) {
+        const even = row % 2 === 0;
+        g.lineStyle(1, even ? 0x87d8f5 : 0x1e6b8a, even ? 0.55 : 0.4);
+        g.beginPath();
+        for (let wx = x; wx <= x + w; wx += 3) {
+          const curveY = wy + Math.sin(wx * 0.32 + (even ? t : -t) * 1.6) * 2;
+          if (wx === x) {
+            g.moveTo(wx, curveY);
+          } else {
+            g.lineTo(wx, curveY);
+          }
+        }
+        g.strokePath();
+      }
+    });
+  }
+
+  private createMap(): void {    this.map = this.make.tilemap({ key: 'village-map' });
     const tileset = this.map.addTilesetImage('village-tileset', 'village-tiles', 32, 32, 0, 0);
 
     if (!tileset) {
