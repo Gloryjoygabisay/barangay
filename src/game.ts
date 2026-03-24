@@ -52,7 +52,7 @@ class VillageScene extends Phaser.Scene {
   private hotspots: Hotspot[] = [];
   private thumbstickState = { left: false, right: false, up: false, down: false };
   private isDialogueOpen = false;
-  private spawnPoint = { x: 80, y: 304 };
+  private spawnPoint = { x: 176, y: 336 };
   private facing: Facing = 'down';
   private walkFrame = 0;
   private waterGraphics!: Phaser.GameObjects.Graphics;
@@ -185,8 +185,8 @@ class VillageScene extends Phaser.Scene {
     const t = this.time.now / 900;
 
     const riverBands = [
-      { x: 64, y: 0,  w: 64, h: 128 },  // cols 2-3, rows 0-3
-      { x: 96, y: 96, w: 96, h: 128 }   // cols 3-5, rows 3-6 (extended to cover bridge at col 5)
+      { x: 64, y: 0,   w: 64,  h: 128 },  // cols 2-3, rows 0-3 (upper river)
+      { x: 96, y: 160, w: 160, h: 64  }   // cols 3-7, rows 5-6 (symmetric bridge river)
     ];
 
     riverBands.forEach(({ x, y, w, h }) => {
