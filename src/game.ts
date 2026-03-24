@@ -260,13 +260,15 @@ class VillageScene extends Phaser.Scene {
       const sprite = this.add
         .image(point.x, point.y - 20, HOTSPOT_TEXTURES[encounter.hotspotId] ?? 'marker-market')
         .setDisplaySize(36, 36)
-        .setDepth(3);
+        .setDepth(3)
+        .setVisible(false);
 
       const label = this.add
         .text(point.x - 48, point.y + 8, localizeText(encounter.location, this.language), titleStyle)
         .setDepth(3)
         .setWordWrapWidth(96)
-        .setAlign('center');
+        .setAlign('center')
+        .setVisible(false);
 
       return [
         {
@@ -489,10 +491,10 @@ class VillageScene extends Phaser.Scene {
 
     const questionIdx = this.questionProgressMap.get(encounter.id) ?? 0;
     const question = encounter.questions[questionIdx];
-    const total = encounter.questions.length;
+    const total = 1; // one question per bridge step
 
     if (progressEl) {
-      progressEl.textContent = `${t('questionLabel', this.language)} ${questionIdx + 1} ${t('ofLabel', this.language)} ${total}`;
+      progressEl.textContent = '';
     }
 
     if (typeBadge) {
