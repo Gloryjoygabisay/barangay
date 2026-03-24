@@ -35,40 +35,40 @@ export type UiTextKey =
 
 export const uiText: Record<UiTextKey, LocalizedText> = {
   startEyebrow: {
-    en: 'Mountain Village Journey',
-    tl: 'Paglalakbay sa Baryong Bundok'
+    en: 'Bridge Survival Challenge',
+    tl: 'Hamon ng Pagtawid sa Tulay'
   },
   startTitle: {
-    en: 'Trail Through the Barangay',
-    tl: 'Landas sa Kabundukan'
+    en: 'Bamboo Bridge Logic Quest',
+    tl: 'Hamon ng Kawayan'
   },
   startBlurb: {
-    en: 'Travel as a young Filipino through a highland village, meeting neighbors, helping families, and choosing what kind of traveler you become.',
-    tl: 'Maglakbay bilang isang batang Pilipino sa baryong nasa kabundukan, makipagkilala sa mga kapitbahay, tumulong sa mga pamilya, at pumili kung anong uri ng manlalakbay ang nais mong maging.'
+    en: 'You are crossing a dangerous bamboo bridge in the forest. Every time you move forward, the bridge tests your mind. To survive, you must answer the logic questions correctly.',
+    tl: 'Tumatawid ka sa isang mapanganib na tulayang kawayan sa kagubatan. Sa bawat hakbang mo pasulong, sinusubok ng tulay ang iyong isip. Para makaligtas, kailangan mong sagutin nang tama ang mga tanong ng lohika.'
   },
   startFeaturesHeading: {
     en: 'What awaits you',
     tl: 'Ano ang naghihintay sa iyo'
   },
   startFeatureVillage: {
-    en: 'Explore a hand-drawn village map with mountain paths, bridges, and market spaces.',
-    tl: 'Galugarin ang iginuhit na mapa ng baryo na may mga landas, tulay, at pamilihan.'
+    en: 'Navigate a hand-drawn bamboo bridge map with treacherous planks and forest paths.',
+    tl: 'Tawirin ang iginuhit na mapa ng tulayang kawayan na may mapanganib na tabla at mga landas sa kagubatan.'
   },
   startFeatureChoices: {
-    en: 'Shape encounters through dialogue choices that affect trust, courage, and supplies.',
-    tl: 'Hubugin ang mga tagpo sa pamamagitan ng mga pagpili sa usapan na nakaaapekto sa tiwala, tapang, at baon.'
+    en: 'Solve logic puzzles at each section of the bridge to keep moving forward.',
+    tl: 'Lutasin ang mga tanong ng lohika sa bawat bahagi ng tulay para makasulong.'
   },
   startFeatureLanguage: {
     en: 'Play in English or Filipino, and switch languages at any time.',
     tl: 'Maglaro sa English o Filipino, at magpalit ng wika anumang oras.'
   },
   startButton: {
-    en: 'Start journey',
-    tl: 'Simulan ang paglalakbay'
+    en: 'Start crossing',
+    tl: 'Simulan ang pagtawid'
   },
   startLoading: {
-    en: 'Loading the trail...',
-    tl: 'Inihahanda ang paglalakbay...'
+    en: 'Loading the bridge...',
+    tl: 'Inihahanda ang tulay...'
   },
   startLoadError: {
     en: 'Unable to load the game. Please try again.',
@@ -83,12 +83,12 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
     tl: 'Bersyon'
   },
   eyebrow: {
-    en: 'Narrative Demo',
-    tl: 'Demo ng Kuwento'
+    en: 'Logic Quest',
+    tl: 'Hamon ng Lohika'
   },
   title: {
-    en: 'Trail Through the Barangay',
-    tl: 'Landas sa Kabundukan'
+    en: 'Bamboo Bridge Logic Quest',
+    tl: 'Hamon ng Kawayan'
   },
   language: {
     en: 'Language',
@@ -103,40 +103,40 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
     tl: 'Tungkol sa Laro'
   },
   aboutBody: {
-    en: 'Trail Through the Barangay is a mobile-friendly narrative exploration game about a young Filipino traveling through a mountain village, meeting people, making choices, and shaping the journey through trust, courage, and supplies.',
-    tl: 'Ang Landas sa Kabundukan ay isang mobile-friendly na larong paggalugad at pagkukuwento tungkol sa isang batang Pilipinong naglalakbay sa baryong nasa kabundukan, nakikilala ang mga tao, namimili ng kilos, at hinuhubog ang paglalakbay sa pamamagitan ng tiwala, tapang, at baon.'
+    en: 'Bamboo Bridge Logic Quest is a mobile-friendly puzzle game where you cross a dangerous forest bridge by answering logic questions. Each correct answer keeps you moving forward. Each wrong answer costs you precious planks. How far can your mind take you?',
+    tl: 'Ang Hamon ng Kawayan ay isang mobile-friendly na larong palaisipan kung saan tumatawid ka ng mapanganib na tulay sa kagubatan sa pamamagitan ng pagsagot sa mga tanong ng lohika. Ang bawat tamang sagot ay nagpapasulong sa iyo. Ang bawat maling sagot ay kumukuha ng iyong mahahalagang tabla. Gaano kalayo ang maaabot ng iyong isip?'
   },
   versionLabel: {
     en: 'Version',
     tl: 'Bersyon'
   },
   stats: {
-    en: 'Journey Stats',
-    tl: 'Kalagayan ng Paglalakbay'
+    en: 'Bridge Stats',
+    tl: 'Kalagayan sa Tulay'
   },
   trust: {
-    en: 'Trust',
-    tl: 'Tiwala'
+    en: 'Mind',
+    tl: 'Isip'
   },
   courage: {
     en: 'Courage',
     tl: 'Tapang'
   },
   supplies: {
-    en: 'Supplies',
-    tl: 'Baon'
+    en: 'Planks',
+    tl: 'Tabla'
   },
   instructionsHeading: {
     en: 'How to Play',
     tl: 'Paano Maglaro'
   },
   instructionsBody: {
-    en: 'Move with the on-screen pad or arrow keys. Walk into a glowing place to trigger an encounter, then choose how you respond.',
-    tl: 'Gumalaw gamit ang on-screen pad o arrow keys. Lumapit sa kumikislap na lugar para magsimula ng tagpo, saka pumili ng sagot.'
+    en: 'Move with the on-screen pad or arrow keys. Walk into a glowing section to face a logic challenge, then choose your answer.',
+    tl: 'Gumalaw gamit ang on-screen pad o arrow keys. Lumapit sa kumikislap na bahagi para harapin ang hamon ng lohika, saka pumili ng sagot.'
   },
   close: {
-    en: 'Continue walking',
-    tl: 'Magpatuloy sa paglalakad'
+    en: 'Continue crossing',
+    tl: 'Magpatuloy sa pagtawid'
   },
   completed: {
     en: 'Completed',
@@ -147,8 +147,8 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
     tl: 'Bunga'
   },
   encounterPrompt: {
-    en: 'Choose your response:',
-    tl: 'Piliin ang iyong tugon:'
+    en: 'Answer the logic question:',
+    tl: 'Sagutin ang tanong ng lohika:'
   }
 };
 
