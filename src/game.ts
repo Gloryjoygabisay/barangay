@@ -210,7 +210,20 @@ class VillageScene extends Phaser.Scene {
       throw new Error('Tileset failed to load for village-map.');
     }
 
-    this.map.createLayer('Ground', tileset, 0, 0)?.setDepth(0);
+    const groundLayer = this.map.createLayer('Ground', tileset, 0, 0);
+    groundLayer?.setDepth(0);
+
+    // Randomize grass tiles (ID 1) across 4 variants so the field doesn't look copy-pasted.
+    // Weighted array: original tile 1 appears twice so coverage stays natural.
+    if (groundLayer) {
+      const grassVariants = [1, 1, 33, 34, 35, 36];
+      groundLayer.forEachTile((tile) => {
+        if (tile.index === 1) {
+          tile.index = grassVariants[Math.floor(Math.random() * grassVariants.length)];
+        }
+      });
+    }
+
     this.map.createLayer('Decor', tileset, 0, 0)?.setDepth(1);
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
   }
