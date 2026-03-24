@@ -41,7 +41,11 @@ export type UiTextKey =
   | 'gameOverTitle'
   | 'gameOverBody'
   | 'finalScore'
-  | 'playAgain';
+  | 'playAgain'
+  | 'levelEasy'
+  | 'levelMedium'
+  | 'levelHard'
+  | 'levelExpert';
 
 export const uiText: Record<UiTextKey, LocalizedText> = {
   startEyebrow: {
@@ -199,6 +203,22 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   playAgain: {
     en: 'Try Again',
     tl: 'Subukan Ulit'
+  },
+  levelEasy: {
+    en: '🌱 Easy',
+    tl: '🌱 Madali'
+  },
+  levelMedium: {
+    en: '🔥 Medium',
+    tl: '🔥 Katamtaman'
+  },
+  levelHard: {
+    en: '💡 Hard',
+    tl: '💡 Mahirap'
+  },
+  levelExpert: {
+    en: '⚡ Expert',
+    tl: '⚡ Eksperto'
   }
 };
 
