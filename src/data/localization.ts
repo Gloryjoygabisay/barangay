@@ -41,7 +41,10 @@ export type UiTextKey =
   | 'gameOverTitle'
   | 'gameOverBody'
   | 'finalScore'
-  | 'playAgain';
+  | 'playAgain'
+  | 'missionHeading'
+  | 'missionComplete'
+  | 'missionTimerLabel';
 
 export const uiText: Record<UiTextKey, LocalizedText> = {
   startEyebrow: {
@@ -199,6 +202,18 @@ export const uiText: Record<UiTextKey, LocalizedText> = {
   playAgain: {
     en: 'Try Again',
     tl: 'Subukan Ulit'
+  },
+  missionHeading: {
+    en: 'Your Mission',
+    tl: 'Ang Iyong Misyon'
+  },
+  missionComplete: {
+    en: '🎉 All missions complete!',
+    tl: '🎉 Lahat ng misyon ay natapos!'
+  },
+  missionTimerLabel: {
+    en: 'Time left',
+    tl: 'Natitirang oras'
   }
 };
 

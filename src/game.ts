@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { encounters, localizeText, type Encounter, type StatKey } from './data/encounters';
+import { encounters, levelMissions, localizeText, type Encounter, type StatKey } from './data/encounters';
 import { t, type Language } from './data/localization';
 
 type GameStats = Record<StatKey, number>;
@@ -31,6 +31,8 @@ const ENCOUNTER_RESET_RADIUS = 40;
 const QUESTION_TRANSITION_DELAY_MS = 1200;
 const GAME_OVER_DELAY_MS = 1500;
 const POINTS_PER_LEVEL = 10;
+const OBJECTIVE_DONE_SYMBOL = '✔';
+const OBJECTIVE_PENDING_SYMBOL = '○';
 
 type Facing = 'down' | 'up' | 'side';
 
@@ -53,6 +55,11 @@ class VillageScene extends Phaser.Scene {
   private spawnPoint = { x: 80, y: 304 };
   private facing: Facing = 'down';
   private walkFrame = 0;
+  private totalQuestionsAnswered = 0;
+  private levelTimerSecondsLeft = 0;
+  private levelTimerActive = false;
+  private levelTimerStarted = false;
+  private levelTimerLastTick = 0;
 
   constructor() {
     super('village');
@@ -82,6 +89,7 @@ class VillageScene extends Phaser.Scene {
     this.hookUi();
     this.refreshStaticUi();
     this.refreshStatsUi();
+    this.refreshMissionUi();
     this.scale.on(Phaser.Scale.Events.RESIZE, this.handleResize, this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.scale.off(Phaser.Scale.Events.RESIZE, this.handleResize, this);
@@ -91,6 +99,22 @@ class VillageScene extends Phaser.Scene {
   update(): void {
     if (this.isDialogueOpen) {
       return;
+    }
+
+    if (this.levelTimerActive) {
+      const now = this.time.now;
+      const elapsed = Math.floor((now - this.levelTimerLastTick) / 1000);
+      if (elapsed >= 1) {
+        // Preserve sub-second remainder so drift doesn't accumulate across ticks.
+        this.levelTimerLastTick = now - ((now - this.levelTimerLastTick) % 1000);
+        this.levelTimerSecondsLeft = Math.max(0, this.levelTimerSecondsLeft - elapsed);
+        this.refreshTimerUi();
+        if (this.levelTimerSecondsLeft <= 0) {
+          this.levelTimerActive = false;
+          this.showGameOver();
+          return;
+        }
+      }
     }
 
     const speed = 2.4;
@@ -123,6 +147,7 @@ class VillageScene extends Phaser.Scene {
     this.refreshStaticUi();
     this.refreshStatsUi();
     this.refreshHotspotLabels();
+    this.refreshMissionUi();
 
     const active = this.getActiveEncounter();
     if (active) {
@@ -325,6 +350,7 @@ class VillageScene extends Phaser.Scene {
 
     if (encounter && this.activeEncounterId !== encounter.id) {
       this.activeEncounterId = encounter.id;
+      this.maybeStartLevelTimer(encounter.id);
       this.showEncounter(encounter);
     }
   }
@@ -382,18 +408,22 @@ class VillageScene extends Phaser.Scene {
             this.stats[key as StatKey] += value ?? 0;
           });
           this.score += encounter.level * POINTS_PER_LEVEL;
+          this.totalQuestionsAnswered += 1;
           this.refreshStatsUi();
+          this.refreshMissionUi();
 
           const nextIdx = questionIdx + 1;
           if (nextIdx >= total) {
             this.completed.add(encounter.id);
             this.questionProgressMap.delete(encounter.id);
             this.markHotspotCompleted(encounter.hotspotId);
+            this.stopLevelTimer(encounter.id);
             if (progressEl) progressEl.textContent = '';
             title.textContent = t('checkpointCleared', this.language);
             body.textContent = t('checkpointBody', this.language);
             closeButton.textContent = t('completed', this.language);
             closeButton.classList.remove('hidden');
+            this.refreshMissionUi();
           } else {
             this.questionProgressMap.set(encounter.id, nextIdx);
             body.textContent = localizeText(choice.result, this.language);
@@ -515,6 +545,7 @@ class VillageScene extends Phaser.Scene {
     this.setText('instructions-heading', t('instructionsHeading', this.language));
     this.setText('instructions-body', t('instructionsBody', this.language));
     this.setText('close-dialogue', t('close', this.language));
+    this.setText('mission-heading', t('missionHeading', this.language));
     this.refreshGameOverUi();
   }
 
@@ -523,6 +554,102 @@ class VillageScene extends Phaser.Scene {
     this.setText('courage-value', String(this.stats.courage));
     this.setText('supplies-value', String(this.stats.supplies));
     this.setText('score-value', String(this.score));
+  }
+
+  private getActiveMission() {
+    return levelMissions.find((m) => !this.completed.has(m.encounterId)) ?? null;
+  }
+
+  private refreshMissionUi(): void {
+    this.setText('mission-heading', t('missionHeading', this.language));
+
+    const mission = this.getActiveMission();
+    const levelNameEl = document.getElementById('mission-level-name');
+    const objectivesEl = document.getElementById('mission-objectives');
+
+    if (!levelNameEl || !objectivesEl) {
+      return;
+    }
+
+    if (!mission) {
+      levelNameEl.textContent = t('missionComplete', this.language);
+      objectivesEl.replaceChildren();
+      this.hideTimerUi();
+      return;
+    }
+
+    levelNameEl.textContent = localizeText(mission.name, this.language);
+    objectivesEl.replaceChildren();
+
+    mission.objectives.forEach((obj) => {
+      const li = document.createElement('li');
+      li.className = 'mission-objective';
+
+      let done = false;
+      if (obj.type === 'questions' && obj.target !== undefined) {
+        done = this.totalQuestionsAnswered >= obj.target;
+      } else if (obj.type === 'reach' || obj.type === 'survive') {
+        done = this.completed.has(mission.encounterId);
+      } else if (obj.type === 'timer') {
+        done = this.completed.has(mission.encounterId);
+      }
+
+      li.classList.toggle('mission-objective--done', done);
+      li.textContent = (done ? `${OBJECTIVE_DONE_SYMBOL} ` : `${OBJECTIVE_PENDING_SYMBOL} `) + localizeText(obj.label, this.language);
+
+      if (obj.type === 'questions' && obj.target !== undefined && !done) {
+        const progress = Math.min(this.totalQuestionsAnswered, obj.target);
+        li.textContent += ` (${progress}/${obj.target})`;
+      }
+
+      objectivesEl.appendChild(li);
+    });
+
+    if (mission.timerSeconds !== undefined && this.levelTimerStarted) {
+      this.refreshTimerUi();
+    } else {
+      this.hideTimerUi();
+    }
+  }
+
+  private refreshTimerUi(): void {
+    const timerEl = document.getElementById('mission-timer');
+    if (!timerEl) {
+      return;
+    }
+    timerEl.classList.remove('hidden');
+    timerEl.classList.toggle('mission-timer--urgent', this.levelTimerSecondsLeft <= 15);
+    this.setText('mission-timer-label', t('missionTimerLabel', this.language));
+    const minutes = Math.floor(this.levelTimerSecondsLeft / 60);
+    const seconds = this.levelTimerSecondsLeft % 60;
+    this.setText(
+      'mission-timer-value',
+      `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+    );
+  }
+
+  private hideTimerUi(): void {
+    document.getElementById('mission-timer')?.classList.add('hidden');
+  }
+
+  private maybeStartLevelTimer(encounterId: string): void {
+    const mission = levelMissions.find((m) => m.encounterId === encounterId);
+    if (!mission?.timerSeconds || this.levelTimerStarted) {
+      return;
+    }
+    this.levelTimerSecondsLeft = mission.timerSeconds;
+    this.levelTimerActive = true;
+    this.levelTimerStarted = true;
+    this.levelTimerLastTick = this.time.now;
+    this.refreshMissionUi();
+  }
+
+  private stopLevelTimer(encounterId: string): void {
+    const mission = levelMissions.find((m) => m.encounterId === encounterId);
+    if (!mission?.timerSeconds) {
+      return;
+    }
+    this.levelTimerActive = false;
   }
 
   private refreshGameOverUi(): void {

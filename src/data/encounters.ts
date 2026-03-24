@@ -2,6 +2,84 @@ import type { Language, LocalizedText } from './localization';
 
 export type StatKey = 'trust' | 'courage' | 'supplies';
 
+export type MissionObjectiveType = 'questions' | 'reach' | 'survive' | 'timer';
+
+export type MissionObjective = {
+  id: string;
+  label: LocalizedText;
+  type: MissionObjectiveType;
+  /** Cumulative question count target (used when type === 'questions'). */
+  target?: number;
+};
+
+export type LevelMission = {
+  level: number;
+  /** The encounter that, when completed, fulfils this level's mission. */
+  encounterId: string;
+  name: LocalizedText;
+  objectives: MissionObjective[];
+  /** Countdown duration in seconds for timed levels. */
+  timerSeconds?: number;
+};
+
+export const levelMissions: LevelMission[] = [
+  {
+    level: 1,
+    encounterId: 'bridge-puzzle',
+    name: { en: 'Level 1 – Beginner Bridge', tl: 'Antas 1 – Tulay ng Baguhan' },
+    objectives: [
+      {
+        id: 'l1-questions',
+        label: { en: 'Answer 3 questions', tl: 'Sagutin ang 3 tanong' },
+        type: 'questions',
+        target: 3
+      },
+      {
+        id: 'l1-reach',
+        label: { en: 'Reach the end', tl: 'Abutin ang dulo' },
+        type: 'reach'
+      }
+    ]
+  },
+  {
+    level: 2,
+    encounterId: 'market-puzzle',
+    name: { en: 'Level 2 – Narrow Bridge', tl: 'Antas 2 – Makitid na Tulay' },
+    objectives: [
+      {
+        id: 'l2-questions',
+        label: { en: 'Answer 6 questions', tl: 'Sagutin ang 6 na tanong' },
+        type: 'questions',
+        target: 6
+      },
+      {
+        id: 'l2-survive',
+        label: { en: "Don't fall", tl: 'Huwag mahulog' },
+        type: 'survive'
+      }
+    ]
+  },
+  {
+    level: 3,
+    encounterId: 'ridge-puzzle',
+    name: { en: 'Level 3 – Broken Bridge 😱', tl: 'Antas 3 – Sirang Tulay 😱' },
+    timerSeconds: 90,
+    objectives: [
+      {
+        id: 'l3-questions',
+        label: { en: 'Answer 9 questions', tl: 'Sagutin ang 9 na tanong' },
+        type: 'questions',
+        target: 9
+      },
+      {
+        id: 'l3-timer',
+        label: { en: 'Finish under time', tl: 'Tapusin bago maubos ang oras' },
+        type: 'timer'
+      }
+    ]
+  }
+];
+
 export type QuizChoice = {
   id: string;
   text: LocalizedText;
