@@ -265,6 +265,122 @@ export const encounters: Encounter[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'bamboo-bridge-logic',
+    hotspotId: 'bridge',
+    level: 4,
+    location: { en: 'Bamboo Bridge', tl: 'Tulayang Kawayan' },
+    questions: [
+      {
+        id: 'bbl-q1',
+        title: { en: 'The Crossing Order', tl: 'Ang Pagkakasunod ng Pagtawid' },
+        body: {
+          en: 'Three neighbors must cross: a vendor with heavy sacks, a weak-kneed elder, and a mother with an infant. The bridge holds only two people. The cracked center plank worsens with each crossing. Who should go first to keep everyone safe?',
+          tl: 'Tatlong kapitbahay ang kailangang tumawid: isang tindera na may mabibigat na sako, isang matandang mahina ang tuhod, at isang ina na may sanggol. Dalawang tao lamang ang kaya ng tulay. Lumalala ang bitak sa gitna sa bawat pagtawid. Sino ang dapat mauna para mapanatiling ligtas ang lahat?'
+        },
+        choices: [
+          {
+            id: 'bbl-q1-correct',
+            text: {
+              en: 'Elder first (lightest load), then mother and infant, then vendor alone with the heavy sacks.',
+              tl: 'Matanda muna (pinakamababa ang bigat), saka ina at sanggol, pagkatapos tindera nang mag-isa kasama ang mabibigat na sako.'
+            },
+            result: {
+              en: 'Correct! Everyone crosses safely and the vendor praises your clear thinking.',
+              tl: 'Tama! Ligtas na nakatawid ang lahat at pinuri ng tindera ang iyong malinaw na pag-iisip.'
+            },
+            isCorrect: true,
+            effects: { trust: 2, courage: 1 }
+          },
+          {
+            id: 'bbl-q1-wrong',
+            text: {
+              en: 'Vendor first to clear the heavy load quickly, then the others together.',
+              tl: 'Tindera muna para mabilis na malis ang mabigat na kargamento, saka ang iba nang sabay.'
+            },
+            result: {
+              en: 'Wrong! The heavy load widens the crack and the remaining two cannot cross safely.',
+              tl: 'Mali! Pinalawak ng mabigat na kargamento ang bitak at hindi na ligtas na makatawid ang dalawa pang natira.'
+            },
+            isCorrect: false,
+            effects: { supplies: -1 }
+          }
+        ]
+      },
+      {
+        id: 'bbl-q2',
+        title: { en: 'One Torch, Four People', tl: 'Isang Sulo, Apat na Tao' },
+        body: {
+          en: 'It is night. Four people must cross the bridge with one torch. The bridge holds two at a time. Crossing times: 1 min, 2 min, 5 min, 10 min. A pair moves at the slower person\'s pace. What is the fastest total time to get everyone across?',
+          tl: 'Gabi na. Apat na tao ang kailangang tumawid sa tulay na may isang sulo. Dalawa lang ang kasya sa tulay nang sabay. Oras ng pagtawid: 1 min, 2 min, 5 min, 10 min. Ang bilis ng magkasamang nagtawid ay ayon sa mas mabagal. Ano ang pinakamabilis na kabuuang oras para makatawid ang lahat?'
+        },
+        choices: [
+          {
+            id: 'bbl-q2-correct',
+            text: {
+              en: '17 minutes — send 1+2 across (2 min), return 1 (1 min), send 5+10 (10 min), return 2 (2 min), send 1+2 (2 min).',
+              tl: '17 minuto — ipadala ang 1+2 (2 min), ibalik ang 1 (1 min), ipadala ang 5+10 (10 min), ibalik ang 2 (2 min), ipadala ang 1+2 (2 min).'
+            },
+            result: {
+              en: 'Correct! Your logical sequence gets everyone across in the shortest time.',
+              tl: 'Tama! Ang iyong lohikal na pagkakasunod ay nagpakatawid sa lahat sa pinakamaikling oras.'
+            },
+            isCorrect: true,
+            effects: { courage: 2, trust: 1 }
+          },
+          {
+            id: 'bbl-q2-wrong',
+            text: {
+              en: '19 minutes — always send the fastest person back with the torch.',
+              tl: '19 minuto — palaging ibalik ang pinakamabilis na tao kasama ang sulo.'
+            },
+            result: {
+              en: 'Wrong! That greedy approach wastes two extra minutes — the smarter pairing saves time.',
+              tl: 'Mali! Ang pamamaraang iyon ay nasasayang ng dalawang minuto — ang mas matalinong pagpapares ay nakakatipid ng oras.'
+            },
+            isCorrect: false,
+            effects: { supplies: -1 }
+          }
+        ]
+      },
+      {
+        id: 'bbl-q3',
+        title: { en: 'The Plank and the Goat', tl: 'Ang Tabla at ang Kambing' },
+        body: {
+          en: 'A farmer must cross the bridge with a goat, a bundle of rice stalks, and a dog. The bridge holds only the farmer and one item at a time. Left alone: the dog chases the goat, the goat eats the rice. How does the farmer get everything across?',
+          tl: 'Isang magsasaka ang kailangang tumawid kasama ang isang kambing, isang bigkis ng palay, at isang aso. Ang tulay ay kaya lamang ng magsasaka at isang bagay nang sabay. Kapag nag-iisa: hinahabol ng aso ang kambing, kinakain ng kambing ang palay. Paano makakakuha ng lahat ang magsasaka sa kabilang ibayo?'
+        },
+        choices: [
+          {
+            id: 'bbl-q3-correct',
+            text: {
+              en: 'Take the goat over first, return alone, take the rice over, bring the goat back, take the dog over, return alone, take the goat over.',
+              tl: 'Isawid muna ang kambing, bumalik nang mag-isa, isawid ang palay, ibalik ang kambing, isawid ang aso, bumalik nang mag-isa, isawid ang kambing.'
+            },
+            result: {
+              en: 'Correct! The classic river-crossing solution — the farmer arrives with everything intact.',
+              tl: 'Tama! Ang klasikong solusyon sa pagtawid sa ilog — dumating ang magsasaka nang buo ang lahat.'
+            },
+            isCorrect: true,
+            effects: { trust: 2, supplies: 1 }
+          },
+          {
+            id: 'bbl-q3-wrong',
+            text: {
+              en: 'Take the dog first, then the rice, then return for the goat.',
+              tl: 'Isawid muna ang aso, saka ang palay, pagkatapos ay bumalik para sa kambing.'
+            },
+            result: {
+              en: 'Wrong! The goat eats all the rice while you are gone with the dog.',
+              tl: 'Mali! Kinain ng kambing ang lahat ng palay habang wala ka kasama ang aso.'
+            },
+            isCorrect: false,
+            effects: { supplies: -1 }
+          }
+        ]
+      }
+    ]
   }
 ];
 
