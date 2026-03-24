@@ -28,6 +28,9 @@ const HOTSPOT_TEXTURES: Record<string, string> = {
 };
 const ENCOUNTER_TRIGGER_RADIUS = 28;
 const ENCOUNTER_RESET_RADIUS = 40;
+const QUESTION_TRANSITION_DELAY_MS = 1200;
+const GAME_OVER_DELAY_MS = 1500;
+const POINTS_PER_LEVEL = 10;
 
 type Facing = 'down' | 'up' | 'side';
 
@@ -39,10 +42,11 @@ class VillageScene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private language: Language = 'en';
   private stats: GameStats = { ...STARTING_STATS };
+  private score = 0;
   private activeEncounterId: string | null = null;
   private dismissedEncounterId: string | null = null;
   private completed = new Set<string>();
-  private resolvedChoices = new Map<string, string>();
+  private questionProgressMap = new Map<string, number>();
   private hotspots: Hotspot[] = [];
   private thumbstickState = { left: false, right: false, up: false, down: false };
   private isDialogueOpen = false;
@@ -243,6 +247,11 @@ class VillageScene extends Phaser.Scene {
   private hookUi(): void {
     const closeButton = document.getElementById('close-dialogue');
     closeButton?.addEventListener('click', () => this.closeDialogue());
+
+    const playAgainButton = document.getElementById('play-again-button');
+    playAgainButton?.addEventListener('click', () => {
+      window.location.reload();
+    });
   }
 
   private handleResize(): void {
@@ -322,54 +331,99 @@ class VillageScene extends Phaser.Scene {
 
   private showEncounter(encounter: Encounter): void {
     const panel = document.getElementById('dialogue-panel');
-    const location = document.getElementById('dialogue-location');
+    const locationEl = document.getElementById('dialogue-location');
+    const progressEl = document.getElementById('question-progress');
     const title = document.getElementById('dialogue-title');
     const body = document.getElementById('dialogue-body');
     const choiceList = document.getElementById('choice-list');
+    const closeButton = document.getElementById('close-dialogue');
 
-    if (!panel || !location || !title || !body || !choiceList) {
+    if (!panel || !locationEl || !title || !body || !choiceList || !closeButton) {
       return;
     }
 
     this.isDialogueOpen = true;
     panel.classList.remove('hidden');
-    location.textContent = localizeText(encounter.location, this.language);
-    title.textContent = localizeText(encounter.title, this.language);
+    locationEl.textContent = localizeText(encounter.location, this.language);
 
+    if (this.completed.has(encounter.id)) {
+      if (progressEl) progressEl.textContent = '';
+      title.textContent = t('checkpointCleared', this.language);
+      body.textContent = t('checkpointBody', this.language);
+      choiceList.replaceChildren();
+      closeButton.textContent = t('completed', this.language);
+      closeButton.classList.remove('hidden');
+      return;
+    }
+
+    const questionIdx = this.questionProgressMap.get(encounter.id) ?? 0;
+    const question = encounter.questions[questionIdx];
+    const total = encounter.questions.length;
+
+    if (progressEl) {
+      progressEl.textContent = `${t('questionLabel', this.language)} ${questionIdx + 1} ${t('ofLabel', this.language)} ${total}`;
+    }
+
+    title.textContent = localizeText(question.title, this.language);
+    body.textContent = localizeText(question.body, this.language);
+
+    closeButton.classList.add('hidden');
     choiceList.replaceChildren();
-    const resolvedChoiceId = this.resolvedChoices.get(encounter.id);
-    if (resolvedChoiceId) {
-      const resolvedChoice = encounter.choices.find((choice) => choice.id === resolvedChoiceId);
-      body.textContent = resolvedChoice
-        ? `${t('resultPrefix', this.language)}: ${localizeText(resolvedChoice.result, this.language)}`
-        : localizeText(encounter.body, this.language);
-    } else {
-      body.textContent = `${localizeText(encounter.body, this.language)} ${t('encounterPrompt', this.language)}`;
-      encounter.choices.forEach((choice) => {
-        const button = document.createElement('button');
-        button.className = 'choice-button';
-        button.textContent = localizeText(choice.text, this.language);
-        button.addEventListener('click', () => {
+
+    question.choices.forEach((choice) => {
+      const button = document.createElement('button');
+      button.className = 'choice-button';
+      button.textContent = localizeText(choice.text, this.language);
+      button.addEventListener('click', () => {
+        choiceList.replaceChildren();
+
+        if (choice.isCorrect) {
           Object.entries(choice.effects).forEach(([key, value]) => {
             this.stats[key as StatKey] += value ?? 0;
           });
-          this.completed.add(encounter.id);
-          this.resolvedChoices.set(encounter.id, choice.id);
+          this.score += encounter.level * POINTS_PER_LEVEL;
           this.refreshStatsUi();
-          body.textContent = `${t('resultPrefix', this.language)}: ${localizeText(choice.result, this.language)}`;
-          choiceList.replaceChildren();
-          this.markHotspotCompleted(encounter.hotspotId);
-        });
-        choiceList.appendChild(button);
-      });
-    }
 
-    const closeButton = document.getElementById('close-dialogue');
-    if (closeButton) {
-      closeButton.textContent = this.completed.has(encounter.id)
-        ? t('completed', this.language)
-        : t('close', this.language);
+          const nextIdx = questionIdx + 1;
+          if (nextIdx >= total) {
+            this.completed.add(encounter.id);
+            this.questionProgressMap.delete(encounter.id);
+            this.markHotspotCompleted(encounter.hotspotId);
+            if (progressEl) progressEl.textContent = '';
+            title.textContent = t('checkpointCleared', this.language);
+            body.textContent = t('checkpointBody', this.language);
+            closeButton.textContent = t('completed', this.language);
+            closeButton.classList.remove('hidden');
+          } else {
+            this.questionProgressMap.set(encounter.id, nextIdx);
+            body.textContent = localizeText(choice.result, this.language);
+            this.time.delayedCall(QUESTION_TRANSITION_DELAY_MS, () => {
+              if (this.isDialogueOpen) {
+                this.showEncounter(encounter);
+              }
+            });
+          }
+        } else {
+          body.textContent = localizeText(choice.result, this.language);
+          this.time.delayedCall(GAME_OVER_DELAY_MS, () => {
+            panel.classList.add('hidden');
+            this.isDialogueOpen = false;
+            this.showGameOver();
+          });
+        }
+      });
+      choiceList.appendChild(button);
+    });
+  }
+
+  private showGameOver(): void {
+    const gameOverPanel = document.getElementById('game-over-panel');
+    if (!gameOverPanel) {
+      return;
     }
+    this.isDialogueOpen = true;
+    this.refreshGameOverUi();
+    gameOverPanel.classList.remove('hidden');
   }
 
   private closeDialogue(): void {
@@ -385,6 +439,7 @@ class VillageScene extends Phaser.Scene {
     const closeButton = document.getElementById('close-dialogue');
     if (closeButton) {
       closeButton.textContent = t('close', this.language);
+      closeButton.classList.remove('hidden');
     }
   }
 
@@ -453,18 +508,29 @@ class VillageScene extends Phaser.Scene {
     this.setText('title-text', t('title', this.language));
     this.setText('language-label', t('language', this.language));
     this.setText('stats-heading', t('stats', this.language));
+    this.setText('score-label', t('score', this.language));
     this.setText('trust-label', t('trust', this.language));
     this.setText('courage-label', t('courage', this.language));
     this.setText('supplies-label', t('supplies', this.language));
     this.setText('instructions-heading', t('instructionsHeading', this.language));
     this.setText('instructions-body', t('instructionsBody', this.language));
     this.setText('close-dialogue', t('close', this.language));
+    this.refreshGameOverUi();
   }
 
   private refreshStatsUi(): void {
     this.setText('trust-value', String(this.stats.trust));
     this.setText('courage-value', String(this.stats.courage));
     this.setText('supplies-value', String(this.stats.supplies));
+    this.setText('score-value', String(this.score));
+  }
+
+  private refreshGameOverUi(): void {
+    this.setText('game-over-kicker', t('gameOver', this.language));
+    this.setText('game-over-title', t('gameOverTitle', this.language));
+    this.setText('game-over-body', t('gameOverBody', this.language));
+    this.setText('game-over-score', `${t('finalScore', this.language)}: ${this.score}`);
+    this.setText('play-again-button', t('playAgain', this.language));
   }
 
   private setText(id: string, value: string): void {
