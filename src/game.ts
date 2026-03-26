@@ -24,7 +24,9 @@ const MAP_HEIGHT = 352;
 const HOTSPOT_TEXTURES: Record<string, string> = {
   'bridge-1': 'marker-bridge',
   'bridge-2': 'marker-bridge',
-  'bridge-3': 'marker-bridge'
+  'bridge-3': 'marker-bridge',
+  'bridge-4': 'marker-bridge',
+  'bridge-5': 'marker-bridge'
 };
 const ENCOUNTER_TRIGGER_RADIUS = 28;
 const ENCOUNTER_RESET_RADIUS = 40;
